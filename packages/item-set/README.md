@@ -73,15 +73,12 @@ fn example(deps: DepsMut) -> StdResult<()> {
     // remove an existing element from the set
     VALIDATORS.remove(deps.storage, "jake")?;
 
-    // the number of elements in the set
-    let validator_count = VALIDATORS.len();
-
     // check whether an element is in the set
     let is_whitelisted = VALIDATORS.contains(deps.storage, "pumpkin");
 
     // enumerate elements in the set
     VALIDATORS
-        .range(deps.storage, None, None, Order::Ascending)
+        .items(deps.storage, None, None, Order::Ascending)
         .for_each(|validator| {
             println!("{} is whitelisted!", validator);
         });
