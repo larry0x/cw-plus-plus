@@ -68,7 +68,7 @@ use cosmwasm_std::{DepsMut, Order, StdResult};
 
 fn example(deps: DepsMut) -> StdResult<()> {
     // add a new element to the set
-    VALIDATORS.add(deps.storage, "larry")?;
+    VALIDATORS.insert(deps.storage, "larry")?;
 
     // remove an existing element from the set
     VALIDATORS.remove(deps.storage, "jake")?;

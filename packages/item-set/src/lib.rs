@@ -45,7 +45,7 @@ where
     }
 
     /// Adds an item to the set. Returns whether the item was newly added.
-    pub fn insert(&mut self, store: &mut dyn Storage, item: T) -> StdResult<bool> {
+    pub fn insert(&self, store: &mut dyn Storage, item: T) -> StdResult<bool> {
         let key = self.key(item);
         let new = if key.has(store) {
             false
@@ -57,7 +57,7 @@ where
     }
 
     /// Remove an item from the set. Returns whether the item was present in the set.
-    pub fn remove(&mut self, store: &mut dyn Storage, item: T) -> StdResult<bool> {
+    pub fn remove(&self, store: &mut dyn Storage, item: T) -> StdResult<bool> {
         let key = self.key(item);
         let existed = if key.has(store) {
             key.remove(store);
