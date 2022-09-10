@@ -8,6 +8,7 @@ use cw_storage_plus::{Bound, Key, KeyDeserialize, Path, PrimaryKey, Prefix};
 /// This implementation is equivalent to storing these items as keys in a `Map<T, Empty>`.
 pub struct Set<'a, T> {
     namespace: &'a [u8],
+    // TODO: `count` needs to be saved in the contract store instead of being a field in the struct
     count: usize,
     item_type: PhantomData<T>,
 }
