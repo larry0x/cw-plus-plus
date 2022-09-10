@@ -10,6 +10,10 @@ repository  = "https://github.com/st4k3h0us3/cw-plus-plus"
 license     = "GPL-3.0-or-later"
 keywords    = ["cosmos", "cosmwasm"]
 
+[features]
+default = ["iterator"]
+iterator = ["cw-storage-plus/iterator"]
+
 [dependencies]
 cosmwasm-std = "1.1"
-cw-storage-plus = { version = "0.14", features = ["iterator"] }
+cw-storage-plus = "0.14"

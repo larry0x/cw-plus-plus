@@ -1,7 +1,12 @@
 use std::marker::PhantomData;
 
-use cosmwasm_std::{Empty, Order, StdResult, Storage};
-use cw_storage_plus::{Bound, Key, KeyDeserialize, Path, Prefix, PrimaryKey};
+use cosmwasm_std::{Empty, StdResult, Storage};
+use cw_storage_plus::{Key, KeyDeserialize, Path, PrimaryKey};
+
+#[cfg(feature = "iterator")]
+use cosmwasm_std::Order;
+#[cfg(feature = "iterator")]
+use cw_storage_plus::{Bound, Prefix};
 
 /// A set of non-duplicate items.
 ///
@@ -67,7 +72,13 @@ where
         };
         Ok(existed)
     }
+}
 
+#[cfg(feature = "iterator")]
+impl<'a, T> Set<'a, T>
+where
+    T: PrimaryKey<'a> + KeyDeserialize,
+{
     /// Iterates items in the set with the specified bounds and ordering.
     pub fn items<'c>(
         &self,
