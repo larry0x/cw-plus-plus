@@ -8,8 +8,8 @@ use cw_storage_plus::Bound;
 
 use cw_item_set::Set;
 
-const NAMESPACE: &str = "names";
-const NAMES: Set<&str> = Set::new(NAMESPACE);
+const NAMES: Set<&str> = Set::new("names");
+const TUPLES: Set<(u64, &str)> = Set::new("tuples");
 
 /// Return a list of mockup names for use in testing
 fn mock_names(indexes: Range<usize>) -> Vec<String> {
@@ -43,4 +43,37 @@ fn iterating() {
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
     assert_eq!(names, mock_names(20..30));
+}
+
+#[test]
+fn prefixes() {
+    let mut deps = mock_dependencies();
+
+    let tuples = vec![
+        (1u64, "larry"),
+        (1u64, "jake"),
+        (2u64, "pumpkin"),
+    ];
+
+    tuples
+        .iter()
+        .try_for_each(|tuple| -> StdResult<_> {
+            TUPLES.insert(deps.as_mut().storage, *tuple)?;
+            Ok(())
+        })
+        .unwrap();
+
+    let names = TUPLES
+        .prefix(1)
+        .keys(deps.as_ref().storage, None, None, Order::Ascending)
+        .collect::<StdResult<Vec<_>>>()
+        .unwrap();
+    assert_eq!(names, vec!["jake", "larry"]);
+
+    let names = TUPLES
+        .prefix(2)
+        .keys(deps.as_ref().storage, None, None, Order::Ascending)
+        .collect::<StdResult<Vec<_>>>()
+        .unwrap();
+    assert_eq!(names, vec!["pumpkin"]);
 }

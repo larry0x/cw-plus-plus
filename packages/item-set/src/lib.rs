@@ -6,7 +6,7 @@ use cw_storage_plus::{Key, KeyDeserialize, Path, PrimaryKey};
 #[cfg(feature = "iterator")]
 use cosmwasm_std::Order;
 #[cfg(feature = "iterator")]
-use cw_storage_plus::{Bound, Prefix};
+use cw_storage_plus::{Bound, Prefix, Prefixer};
 
 /// A set of non-duplicate items.
 ///
@@ -78,6 +78,12 @@ impl<'a, T> Set<'a, T>
 where
     T: PrimaryKey<'a> + KeyDeserialize,
 {
+    /// Copied from
+    /// https://github.com/CosmWasm/cw-plus/blob/v0.14.0/packages/storage-plus/src/map.rs#L124-126
+    pub fn prefix(&self, p: T::Prefix) -> Prefix<T::Suffix, Empty, T::Suffix> {
+        Prefix::new(self.namespace, &p.prefix())
+    }
+
     /// Iterates items in the set with the specified bounds and ordering.
     pub fn items<'c>(
         &self,
