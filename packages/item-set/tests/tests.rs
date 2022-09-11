@@ -60,12 +60,12 @@ fn removing() {
 
     NAMES.insert(deps.as_mut().storage, "larry").unwrap();
 
-    let existed = NAMES.remove(deps.as_mut().storage, "larry").unwrap();
+    let existed = NAMES.remove(deps.as_mut().storage, "larry");
 
     assert!(existed);
     assert_eq!(deps.as_ref().storage.get(&key("larry")), None);
 
-    let existed = NAMES.remove(deps.as_mut().storage, "jake").unwrap();
+    let existed = NAMES.remove(deps.as_mut().storage, "jake");
 
     assert!(!existed);
     assert_eq!(deps.as_ref().storage.get(&key("jake")), None);

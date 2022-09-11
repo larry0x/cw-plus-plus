@@ -62,15 +62,14 @@ where
     }
 
     /// Remove an item from the set. Returns whether the item was present in the set.
-    pub fn remove(&self, store: &mut dyn Storage, item: T) -> StdResult<bool> {
+    pub fn remove(&self, store: &mut dyn Storage, item: T) -> bool {
         let key = self.key(item);
-        let existed = if key.has(store) {
+        if key.has(store) {
             key.remove(store);
             true
         } else {
             false
-        };
-        Ok(existed)
+        }
     }
 }
 
