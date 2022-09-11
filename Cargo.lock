@@ -148,7 +148,7 @@ dependencies = [
 
 [[package]]
 name = "cw-item-set"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "cosmwasm-std",
  "cw-storage-plus",
@@ -156,9 +156,9 @@ dependencies = [
 
 [[package]]
 name = "cw-storage-plus"
-version = "0.14.0"
+version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c8b264257c4f44c49b7ce09377af63aa040768ecd3fd7bdd2d48a09323a1e90"
+checksum = "648b1507290bbc03a8d88463d7cd9b04b1fa0155e5eef366c4fa052b9caaac7a"
 dependencies = [
  "cosmwasm-std",
  "schemars",

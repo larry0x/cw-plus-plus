@@ -1,6 +1,6 @@
 [package]
 name        = "cw-item-set"
-version     = "0.1.0"
+version     = "0.2.0"
 authors     = ["larry <gm@larry.engineer>"]
 edition     = "2021"
 description = "Set of non-duplicate items for smart contract store"
@@ -15,5 +15,5 @@ default = ["iterator"]
 iterator = ["cw-storage-plus/iterator"]
 
 [dependencies]
-cosmwasm-std = "1.1"
-cw-storage-plus = "0.14"
+cosmwasm-std = "1.0"
+cw-storage-plus = "0.13"
