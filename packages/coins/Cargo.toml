@@ -1,0 +1,19 @@
+[package]
+name        = "cw-coins"
+version     = "0.1.0"
+authors     = ["larry <gm@larry.engineer>"]
+edition     = "2021"
+description = "Helper functions for managing multiple coins"
+readme      = "README.md"
+homepage    = "https://larry.engineer"
+repository  = "https://github.com/st4k3h0us3/cw-plus-plus"
+license     = "GPL-3.0-or-later"
+keywords    = ["cosmos", "cosmwasm"]
+
+[dependencies]
+cosmwasm-std = "1.0"
+schemars = "0.8"
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1.0"

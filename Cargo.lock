@@ -147,6 +147,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-coins"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-std",
+ "schemars",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "cw-item-set"
 version = "0.4.0"
 dependencies = [
