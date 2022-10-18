@@ -55,7 +55,7 @@ use serde::{de, Serialize};
 /// let coins = Coins::from_str("12345uatom,42069umars,88888uosmo").unwrap();
 /// let plain = coins.to_string();
 /// ```
-#[derive(Serialize, Clone, Default, Debug, PartialEq, JsonSchema)]
+#[derive(Serialize, Clone, Default, Debug, PartialEq, Eq, JsonSchema)]
 pub struct Coins(BTreeMap<String, Uint128>);
 
 // We implement a custom serde::de::Deserialize trait to handle the case where the JSON string contains
