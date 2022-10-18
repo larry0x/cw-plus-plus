@@ -2,7 +2,7 @@
 members = ["packages/*"]
 
 [workspace.package]
-version    = "0.4.0"
+version    = "0.5.0"
 authors    = ["larry <gm@larry.engineer>"]
 edition    = "2021"
 homepage   = "https://larry.engineer"
@@ -11,8 +11,8 @@ license    = "GPL-3.0-or-later"
 keywords   = ["cosmos", "cosmwasm"]
 
 [workspace.dependencies]
-cosmwasm-std    = "1.0"
-cw-storage-plus = "0.13"
+cosmwasm-std    = "1.1"
+cw-storage-plus = "0.15"
 schemars        = "0.8"
 serde           = { version = "1.0", default-features = false }
 
