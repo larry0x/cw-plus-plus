@@ -1,19 +1,18 @@
 [package]
 name        = "cw-item-set"
-version     = "0.4.0"
-authors     = ["larry <gm@larry.engineer>"]
-edition     = "2021"
 description = "Set of non-duplicate items for smart contract store"
-readme      = "README.md"
-homepage    = "https://larry.engineer"
-repository  = "https://github.com/st4k3h0us3/cw-plus-plus"
-license     = "GPL-3.0-or-later"
-keywords    = ["cosmos", "cosmwasm"]
+version     = { workspace = true }
+authors     = { workspace = true }
+edition     = { workspace = true }
+homepage    = { workspace = true }
+repository  = { workspace = true }
+license     = { workspace = true }
+keywords    = { workspace = true }
 
 [features]
-default = ["iterator"]
+default  = ["iterator"]
 iterator = ["cw-storage-plus/iterator"]
 
 [dependencies]
-cosmwasm-std = "1.0"
-cw-storage-plus = "0.13"
+cosmwasm-std    = { workspace = true }
+cw-storage-plus = { workspace = true }

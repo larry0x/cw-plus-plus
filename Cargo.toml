@@ -1,6 +1,21 @@
 [workspace]
 members = ["packages/*"]
 
+[workspace.package]
+version    = "0.4.0"
+authors    = ["larry <gm@larry.engineer>"]
+edition    = "2021"
+homepage   = "https://larry.engineer"
+repository = "https://github.com/st4k3h0us3/cw-plus-plus"
+license    = "GPL-3.0-or-later"
+keywords   = ["cosmos", "cosmwasm"]
+
+[workspace.dependencies]
+cosmwasm-std    = "1.0"
+cw-storage-plus = "0.13"
+schemars        = "0.8"
+serde           = { version = "1.0", default-features = false }
+
 [profile.release]
 rpath = false
 lto = true
