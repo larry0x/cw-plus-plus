@@ -1,4 +1,5 @@
-use cosmwasm_std::testing::mock_dependencies;
+use cosmwasm_std::testing::MockStorage;
+use cosmwasm_std::Storage;
 
 use cw_item_set::Set;
 
@@ -18,55 +19,55 @@ fn key(name: &str) -> Vec<u8> {
 
 #[test]
 fn containing() {
-    let mut deps = mock_dependencies();
+    let mut store = MockStorage::default();
 
-    NAMES.insert(deps.as_mut().storage, "larry").unwrap();
+    NAMES.insert(&mut store, "larry").unwrap();
 
-    assert!(NAMES.contains(deps.as_ref().storage, "larry"));
-    assert!(!NAMES.contains(deps.as_ref().storage, "jake"));
+    assert!(NAMES.contains(&store, "larry"));
+    assert!(!NAMES.contains(&store, "jake"));
 
-    NAMES.insert(deps.as_mut().storage, "jake").unwrap();
+    NAMES.insert(&mut store, "jake").unwrap();
 
-    assert!(NAMES.contains(deps.as_ref().storage, "larry"));
-    assert!(NAMES.contains(deps.as_ref().storage, "jake"));
+    assert!(NAMES.contains(&store, "larry"));
+    assert!(NAMES.contains(&store, "jake"));
 }
 
 #[test]
 fn inserting() {
-    let mut deps = mock_dependencies();
+    let mut store = MockStorage::default();
 
-    let new = NAMES.insert(deps.as_mut().storage, "larry").unwrap();
+    let new = NAMES.insert(&mut store, "larry").unwrap();
 
     assert!(new);
-    assert_eq!(deps.as_ref().storage.get(&key("larry")), Some(b"{}".to_vec()));
-    assert_eq!(deps.as_ref().storage.get(&key("jake")), None);
+    assert_eq!(store.get(&key("larry")), Some(b"{}".to_vec()));
+    assert_eq!(store.get(&key("jake")), None);
 
-    let new = NAMES.insert(deps.as_mut().storage, "larry").unwrap();
+    let new = NAMES.insert(&mut store, "larry").unwrap();
 
     assert!(!new);
-    assert_eq!(deps.as_ref().storage.get(&key("larry")), Some(b"{}".to_vec()));
-    assert_eq!(deps.as_ref().storage.get(&key("jake")), None);
+    assert_eq!(store.get(&key("larry")), Some(b"{}".to_vec()));
+    assert_eq!(store.get(&key("jake")), None);
 
-    let new = NAMES.insert(deps.as_mut().storage, "jake").unwrap();
+    let new = NAMES.insert(&mut store, "jake").unwrap();
 
     assert!(new);
-    assert_eq!(deps.as_ref().storage.get(&key("larry")), Some(b"{}".to_vec()));
-    assert_eq!(deps.as_ref().storage.get(&key("jake")), Some(b"{}".to_vec()));
+    assert_eq!(store.get(&key("larry")), Some(b"{}".to_vec()));
+    assert_eq!(store.get(&key("jake")), Some(b"{}".to_vec()));
 }
 
 #[test]
 fn removing() {
-    let mut deps = mock_dependencies();
+    let mut store = MockStorage::default();
 
-    NAMES.insert(deps.as_mut().storage, "larry").unwrap();
+    NAMES.insert(&mut store, "larry").unwrap();
 
-    let existed = NAMES.remove(deps.as_mut().storage, "larry").unwrap();
+    let existed = NAMES.remove(&mut store, "larry").unwrap();
 
     assert!(existed);
-    assert_eq!(deps.as_ref().storage.get(&key("larry")), None);
+    assert_eq!(store.get(&key("larry")), None);
 
-    let existed = NAMES.remove(deps.as_mut().storage, "jake").unwrap();
+    let existed = NAMES.remove(&mut store, "jake").unwrap();
 
     assert!(!existed);
-    assert_eq!(deps.as_ref().storage.get(&key("jake")), None);
+    assert_eq!(store.get(&key("jake")), None);
 }

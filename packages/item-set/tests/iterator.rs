@@ -2,7 +2,7 @@
 
 use std::ops::Range;
 
-use cosmwasm_std::testing::mock_dependencies;
+use cosmwasm_std::testing::MockStorage;
 use cosmwasm_std::{Order, StdResult, Storage};
 use cw_storage_plus::Bound;
 
@@ -27,19 +27,19 @@ fn insert_mock_names(set: Set<&str>, store: &mut dyn Storage) {
 
 #[test]
 fn iterating() {
-    let mut deps = mock_dependencies();
+    let mut store = MockStorage::default();
 
-    insert_mock_names(NAMES, deps.as_mut().storage);
+    insert_mock_names(NAMES, &mut store);
 
     let names = NAMES
-        .items(deps.as_ref().storage, None, None, Order::Ascending)
+        .items(&store, None, None, Order::Ascending)
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
     assert_eq!(names, mock_names(1..100));
 
     let start_after = Bound::ExclusiveRaw(b"test-name-2".to_vec());
     let names = NAMES
-        .items(deps.as_ref().storage, Some(start_after), None, Order::Ascending)
+        .items(&store, Some(start_after), None, Order::Ascending)
         .take(10)
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
@@ -48,14 +48,14 @@ fn iterating() {
 
 #[test]
 fn clearing() {
-    let mut deps = mock_dependencies();
+    let mut store = MockStorage::default();
 
-    insert_mock_names(NAMES, deps.as_mut().storage);
+    insert_mock_names(NAMES, &mut store);
 
-    NAMES.clear(deps.as_mut().storage);
+    NAMES.clear(&mut store);
 
     let names = NAMES
-        .items(deps.as_ref().storage, None, None, Order::Ascending)
+        .items(&store, None, None, Order::Ascending)
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
     assert_eq!(names.len(), 0);
@@ -63,7 +63,7 @@ fn clearing() {
 
 #[test]
 fn prefixes() {
-    let mut deps = mock_dependencies();
+    let mut store = MockStorage::default();
 
     let tuples = vec![
         (1u64, "larry"),
@@ -74,21 +74,21 @@ fn prefixes() {
     tuples
         .iter()
         .try_for_each(|tuple| -> StdResult<_> {
-            TUPLES.insert(deps.as_mut().storage, *tuple)?;
+            TUPLES.insert(&mut store, *tuple)?;
             Ok(())
         })
         .unwrap();
 
     let names = TUPLES
         .prefix(1)
-        .keys(deps.as_ref().storage, None, None, Order::Ascending)
+        .keys(&store, None, None, Order::Ascending)
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
     assert_eq!(names, vec!["jake", "larry"]);
 
     let names = TUPLES
         .prefix(2)
-        .keys(deps.as_ref().storage, None, None, Order::Ascending)
+        .keys(&store, None, None, Order::Ascending)
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
     assert_eq!(names, vec!["pumpkin"]);
