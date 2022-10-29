@@ -10,7 +10,8 @@ license     = { workspace = true }
 keywords    = { workspace = true }
 
 [features]
-default  = ["iterator"]
+default  = ["counter", "iterator"]
+counter  = []
 iterator = ["cw-storage-plus/iterator"]
 
 [dependencies]

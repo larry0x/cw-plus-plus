@@ -8,8 +8,8 @@ use cw_storage_plus::Bound;
 
 use cw_item_set::Set;
 
-const NAMES: Set<&str> = Set::new("names");
-const TUPLES: Set<(u64, &str)> = Set::new("tuples");
+const NAMES: Set<&str> = Set::new("names", "names__counter");
+const TUPLES: Set<(u64, &str)> = Set::new("tuples", "tuples__counter");
 
 /// Return a list of mockup names for use in testing
 fn mock_names(indexes: Range<usize>) -> Vec<String> {

@@ -3,7 +3,7 @@ use cosmwasm_std::testing::mock_dependencies;
 use cw_item_set::Set;
 
 const NAMESPACE: &str = "names";
-const NAMES: Set<&str> = Set::new(NAMESPACE);
+const NAMES: Set<&str> = Set::new(NAMESPACE, "names__counter");
 
 /// Returns the raw storage key for a given name.
 /// The key is: length of namespace (2 bytes) + namespace + the name
@@ -60,12 +60,12 @@ fn removing() {
 
     NAMES.insert(deps.as_mut().storage, "larry").unwrap();
 
-    let existed = NAMES.remove(deps.as_mut().storage, "larry");
+    let existed = NAMES.remove(deps.as_mut().storage, "larry").unwrap();
 
     assert!(existed);
     assert_eq!(deps.as_ref().storage.get(&key("larry")), None);
 
-    let existed = NAMES.remove(deps.as_mut().storage, "jake");
+    let existed = NAMES.remove(deps.as_mut().storage, "jake").unwrap();
 
     assert!(!existed);
     assert_eq!(deps.as_ref().storage.get(&key("jake")), None);
