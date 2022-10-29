@@ -16,7 +16,7 @@ fn casting_vec() {
 
     // &Coins --> Vec<Coins>
     // NOTE: the returned vec should be sorted
-    assert_eq!((&coins).to_vec(), vec);
+    assert_eq!(coins.to_vec(), vec);
     // Coins --> Vec<Coins>
     // NOTE: the returned vec should be sorted
     assert_eq!(coins.into_vec(), vec);
@@ -128,11 +128,11 @@ fn handling_invalid_amount() {
 fn length() {
     let coins = Coins::default();
     assert_eq!(coins.len(), 0);
-    assert_eq!(coins.is_empty(), true);
+    assert!(coins.is_empty());
 
     let coins = helpers::mock_coins();
     assert_eq!(coins.len(), 3);
-    assert_eq!(coins.is_empty(), false);
+    assert!(!coins.is_empty());
 }
 
 mod helpers {
@@ -140,7 +140,7 @@ mod helpers {
     use cw_coins::Coins;
 
     /// Sort a Vec<Coin> by denom alphabetically
-    pub(super) fn sort_by_denom(vec: &mut Vec<Coin>) {
+    pub(super) fn sort_by_denom(vec: &mut [Coin]) {
         vec.sort_by(|a, b| a.denom.cmp(&b.denom));
     }
 

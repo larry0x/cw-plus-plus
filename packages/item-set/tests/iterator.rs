@@ -13,7 +13,7 @@ const TUPLES: Set<(u64, &str)> = Set::new("tuples", "tuples__counter");
 
 /// Return a list of mockup names for use in testing
 fn mock_names(indexes: Range<usize>) -> Vec<String> {
-    let mut names = indexes.map(|i| format!("test-name-{}", i)).collect::<Vec<_>>();
+    let mut names = indexes.map(|i| format!("test-name-{i}")).collect::<Vec<_>>();
     names.sort();
     names
 }
