@@ -129,7 +129,15 @@ impl<'a, T> Set<'a, T>
 where
     T: PrimaryKey<'a> + KeyDeserialize,
 {
-    /// Copied from
+    /// Copied from cw-storage-plus:
+    /// https://github.com/CosmWasm/cw-storage-plus/blob/v0.16.0/src/map.rs#L55-L57
+    fn no_prefix_raw(&self) -> Prefix<Vec<u8>, Empty, T> {
+        Prefix::new(self.namespace, &[])
+    }
+
+    /// Access items in the set under the given prefix.\
+    ///
+    /// Copied from cw-storage-plus:
     /// https://github.com/CosmWasm/cw-plus/blob/v0.14.0/packages/storage-plus/src/map.rs#L124-126
     pub fn prefix(&self, p: T::Prefix) -> Prefix<T::Suffix, Empty, T::Suffix> {
         Prefix::new(self.namespace, &p.prefix())
@@ -147,5 +155,32 @@ where
         T::Output: 'static,
     {
         Prefix::<T, Empty, T>::new(self.namespace, &[]).keys(store, min, max, order)
+    }
+
+    /// Delete all elements from the set.
+    ///
+    /// Copied from cw-storage-plus:
+    /// https://github.com/CosmWasm/cw-storage-plus/blob/v0.16.0/src/map.rs#L115-L132
+    pub fn clear(&self, store: &mut dyn Storage) {
+        const TAKE: usize = 10;
+        let mut cleared = false;
+
+        while !cleared {
+            let paths = self
+                .no_prefix_raw()
+                .keys_raw(store, None, None, Order::Ascending)
+                .map(|raw_key| Path::<Empty>::new(self.namespace, &[raw_key.as_slice()]))
+                .take(TAKE)
+                .collect::<Vec<_>>();
+
+            paths
+                .iter()
+                .for_each(|path| store.remove(path));
+
+            cleared = paths.len() < TAKE;
+        }
+
+        #[cfg(feature = "counter")]
+        self.counter.remove(store);
     }
 }
