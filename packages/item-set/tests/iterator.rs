@@ -3,7 +3,7 @@
 use std::ops::Range;
 
 use cosmwasm_std::testing::mock_dependencies;
-use cosmwasm_std::{Order, StdResult};
+use cosmwasm_std::{Order, StdResult, Storage};
 use cw_storage_plus::Bound;
 
 use cw_item_set::Set;
@@ -18,17 +18,18 @@ fn mock_names(indexes: Range<usize>) -> Vec<String> {
     names
 }
 
+fn insert_mock_names(set: Set<&str>, store: &mut dyn Storage) {
+    mock_names(1..100)
+        .iter()
+        .try_for_each(|name| set.insert(store, name).map(|_| ()))
+        .unwrap();
+}
+
 #[test]
 fn iterating() {
     let mut deps = mock_dependencies();
 
-    mock_names(1..100)
-        .iter()
-        .try_for_each(|name| -> StdResult<_> {
-            NAMES.insert(deps.as_mut().storage, name)?;
-            Ok(())
-        })
-        .unwrap();
+    insert_mock_names(NAMES, deps.as_mut().storage);
 
     let names = NAMES
         .items(deps.as_ref().storage, None, None, Order::Ascending)
@@ -43,6 +44,21 @@ fn iterating() {
         .collect::<StdResult<Vec<_>>>()
         .unwrap();
     assert_eq!(names, mock_names(20..30));
+}
+
+#[test]
+fn clearing() {
+    let mut deps = mock_dependencies();
+
+    insert_mock_names(NAMES, deps.as_mut().storage);
+
+    NAMES.clear(deps.as_mut().storage);
+
+    let names = NAMES
+        .items(deps.as_ref().storage, None, None, Order::Ascending)
+        .collect::<StdResult<Vec<_>>>()
+        .unwrap();
+    assert_eq!(names.len(), 0);
 }
 
 #[test]
@@ -77,3 +93,4 @@ fn prefixes() {
         .unwrap();
     assert_eq!(names, vec!["pumpkin"]);
 }
+
