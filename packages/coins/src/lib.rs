@@ -193,7 +193,7 @@ impl FromStr for Coins {
                 }
             }
 
-            Err(StdError::parse_err(type_name::<Coin>(), format!("invalid coin string ({})", s)))
+            Err(StdError::parse_err(type_name::<Coin>(), format!("invalid coin string: {s}")))
         };
 
         s.split(',')
@@ -211,10 +211,10 @@ impl fmt::Display for Coins {
         let s = self
             .0
             .iter()
-            .map(|(denom, amount)| format!("{}{}", amount, denom))
+            .map(|(denom, amount)| format!("{amount}{denom}"))
             .collect::<Vec<_>>()
             .join(",");
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
