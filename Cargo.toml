@@ -6,7 +6,7 @@ version    = "0.6.0"
 authors    = ["larry <gm@larry.engineer>"]
 edition    = "2021"
 homepage   = "https://larry.engineer"
-repository = "https://github.com/stake-enjoyers/cw-plus-plus"
+repository = "https://github.com/steak-enjoyers/cw-plus-plus"
 license    = "AGPL-3.0-or-later"
 keywords   = ["cosmos", "cosmwasm"]
 
