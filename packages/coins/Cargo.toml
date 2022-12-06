@@ -1,7 +1,7 @@
 [package]
 name        = "cw-coins"
 description = "Helper functions for managing multiple coins"
-version     = { workspace = true }
+version     = "0.6.1"
 authors     = { workspace = true }
 edition     = { workspace = true }
 license     = { workspace = true }
