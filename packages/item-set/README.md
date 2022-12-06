@@ -24,11 +24,10 @@ fn example(deps: DepsMut) -> StdResult<()> {
     let num_validators = VALIDATORS.count(deps.as_ref().storage)?;
 
     // enumerate items in the set
-    VALIDATORS
-        .items(deps.as_ref().storage, None, None, Order::Ascending)
-        .for_each(|validator| {
-            println!("{} is whitelisted!", validator);
-        });
+    for res in VALIDATORS.items(deps.as_ref().storage, None, None, Order::Ascending) {
+        let validator = res?;
+        println!("{} is whitelisted!", validator);
+    }
 
     // delete all items in the set
     VALIDATORS.clear(deps.storage);
