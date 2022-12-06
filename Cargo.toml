@@ -2,7 +2,6 @@
 members = ["packages/*"]
 
 [workspace.package]
-version    = "0.6.0"
 authors    = ["larry <gm@larry.engineer>"]
 edition    = "2021"
 homepage   = "https://larry.engineer"
