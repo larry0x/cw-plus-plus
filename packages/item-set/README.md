@@ -48,7 +48,7 @@ There are two optional features, both enabled by default:
 
 - `iterator`: The `range`, `prefix`, and `clear` functions require this feature.
 
-- `count`: The `count` function requires this feature. If enabled, an `Item<u64>` will be created to store the total number of items in the set. In this case, it is necessary to provide a storage key for the counter when declaring a set:
+- `counter`: The `count` function requires this feature. If enabled, an `Item<u64>` will be created to store the total number of items in the set. In this case, it is necessary to provide a storage key for the counter when declaring a set:
 
   ```rust
   // `counter` feature ENABLED
