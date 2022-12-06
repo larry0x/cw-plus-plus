@@ -147,23 +147,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cw-address-like"
-version = "1.0.1"
-dependencies = [
- "cosmwasm-std",
-]
-
-[[package]]
-name = "cw-coins"
-version = "0.6.1"
-dependencies = [
- "cosmwasm-std",
- "schemars",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "cw-item-set"
 version = "0.6.0"
 dependencies = [
