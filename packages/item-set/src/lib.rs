@@ -84,7 +84,7 @@ where
     ///
     /// This is copied from
     /// https://github.com/CosmWasm/cw-plus/blob/v0.14.0/packages/storage-plus/src/map.rs#L47-L52
-    pub fn key(&self, item: T) -> Path<Empty> {
+    fn key(&self, item: T) -> Path<Empty> {
         Path::new(
             self.namespace,
             &item.key().iter().map(Key::as_ref).collect::<Vec<_>>(),
