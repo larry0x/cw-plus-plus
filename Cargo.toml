@@ -12,9 +12,7 @@ keywords   = ["cosmos", "cosmwasm"]
 
 [workspace.dependencies]
 cosmwasm-std    = "1.1"
-cw-storage-plus = "0.16"
-schemars        = "0.8"
-serde           = { version = "1.0", default-features = false }
+cw-storage-plus = "1.0"
 
 [profile.release]
 debug            = false
