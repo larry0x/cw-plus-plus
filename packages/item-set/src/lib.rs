@@ -176,9 +176,9 @@ where
                 .take(TAKE)
                 .collect::<Vec<_>>();
 
-            paths
-                .iter()
-                .for_each(|path| store.remove(path));
+            for path in &paths {
+                store.remove(path);
+            }
 
             cleared = paths.len() < TAKE;
         }
