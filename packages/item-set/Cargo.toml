@@ -9,6 +9,9 @@ repository  = { workspace = true }
 license     = { workspace = true }
 keywords    = { workspace = true }
 
+[lib]
+doctest = false # disable doc tests
+
 [features]
 default  = ["counter", "iterator"]
 counter  = []
