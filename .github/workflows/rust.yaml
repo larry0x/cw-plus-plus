@@ -2,18 +2,18 @@ on: push
 name: Rust CI
 jobs:
   check:
-    name: check
+    name: Check
     runs-on: ubuntu-latest
     steps:
-      - name: checkout sources
+      - name: Checkout sources
         uses: actions/checkout@v2
-      - name: install stable toolchain
+      - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
-      - name: check for errors
+      - name: Check for errors
         uses: actions-rs/cargo@v1
         with:
           command: check
@@ -24,35 +24,35 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     steps:
-      - name: checkout sources
+      - name: Checkout sources
         uses: actions/checkout@v2
-      - name: install stable toolchain
+      - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           override: true
-      - name: run tests
+      - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --locked
+          args: --lib --locked
         env:
           RUST_BACKTRACE: 1
   clippy:
     name: clippy
     runs-on: ubuntu-latest
     steps:
-      - name: checkout sources
+      - name: Checkout sources
         uses: actions/checkout@v2
-      - name: install stable toolchain
+      - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           toolchain: stable
           components: clippy
           override: true
-      - name: run linter
+      - name: Run clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
