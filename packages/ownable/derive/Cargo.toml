@@ -1,6 +1,6 @@
 [package]
 name        = "cw-ownable-derive"
-version     = "0.1.0"
+version     = "0.1.1"
 description = "Macros for generating code used by the `cw-ownable` crate"
 authors     = { workspace = true }
 edition     = { workspace = true }

@@ -1,6 +1,6 @@
 [package]
 name        = "cw-ownable"
-version     = "0.1.0"
+version     = "0.1.1"
 description = "Utility for controlling ownership of CosmWasm smart contracts"
 authors     = { workspace = true }
 edition     = { workspace = true }
@@ -15,7 +15,7 @@ doctest = false # disable doc tests
 [dependencies]
 cosmwasm-schema   = { workspace = true }
 cosmwasm-std      = { workspace = true }
-cw-ownable-derive = { version = "0.1.0", path = "./derive" }
+cw-ownable-derive = { version = "0.1.1", path = "./derive" }
 cw-storage-plus   = { workspace = true }
 cw-utils          = { workspace = true }
 thiserror         = { workspace = true }
