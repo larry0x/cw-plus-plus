@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "anyhow"
+version = "1.0.66"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
+
+[[package]]
 name = "base16ct"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -226,12 +232,15 @@ dependencies = [
 
 [[package]]
 name = "cw-utils"
-version = "1.0.1"
-source = "git+https://github.com/CosmWasm/cw-utils?tag=v1.0.1#5f7a5765df44c16160b815ae5646dde2fe42ac10"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b50d0cac456f98b4339b78e890fbe60e4dfe888c87abacc1129fc3fe34bbe20a"
 dependencies = [
+ "anyhow",
  "cosmwasm-schema",
  "cosmwasm-std",
  "cw2",
+ "k256",
  "schemars",
  "semver",
  "serde",
@@ -240,9 +249,9 @@ dependencies = [
 
 [[package]]
 name = "cw2"
-version = "1.0.0"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03bdf3747540b47bc1bdaf50ba3aa5e4276ab0c2ce73e8b367ebe260cc37ff9c"
+checksum = "91398113b806f4d2a8d5f8d05684704a20ffd5968bf87e3473e1973710b884ad"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",

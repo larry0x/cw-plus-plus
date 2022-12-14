@@ -13,7 +13,7 @@ keywords   = ["cosmos", "cosmwasm"]
 cosmwasm-schema = "1.1"
 cosmwasm-std    = "1.1"
 cw-storage-plus = ">=1.0.1"
-cw-utils        = { git = "https://github.com/CosmWasm/cw-utils", tag = "v1.0.1" }
+cw-utils        = "1.0"
 proc-macro2     = "1"
 quote           = "1"
 syn             = "1"
