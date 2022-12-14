@@ -20,4 +20,4 @@ syn         = { workspace = true }
 
 [dev-dependencies]
 cosmwasm-schema = { workspace = true }
-cw-ownable      = { path = "../" }
+cw-ownable      = { version = "0.1.0", path = "../" }
