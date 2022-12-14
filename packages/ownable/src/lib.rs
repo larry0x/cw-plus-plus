@@ -383,15 +383,12 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, jake, pumpkin] = mock_addresses();
 
-        OWNERSHIP.save(
-            deps.as_mut().storage,
-            &Ownership {
-                owner: Some(larry.clone()),
-                pending_owner: Some(pumpkin),
-                pending_expiry: None,
-            },
-        )
-        .unwrap();
+        let ownership = Ownership {
+            owner: Some(larry.clone()),
+            pending_owner: Some(pumpkin),
+            pending_expiry: None,
+        };
+        OWNERSHIP.save(deps.as_mut().storage, &ownership).unwrap();
 
         // non-owner cannot renounce
         {
