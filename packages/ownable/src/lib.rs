@@ -1,7 +1,7 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, BlockInfo, DepsMut, StdError, StdResult, Storage};
 use cw_storage_plus::Item;
-use cw_utils::Expiration;
+pub use cw_utils::Expiration;
 
 /// Append `cw-ownable`'s execute message variants to an enum.
 ///
