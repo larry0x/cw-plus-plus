@@ -45,16 +45,16 @@ pub use cw_ownable_derive::cw_ownable;
 pub struct Ownership<T> {
     /// The contract's current owner.
     /// `None` if the ownership has been renounced.
-    owner: Option<T>,
+    pub owner: Option<T>,
 
     /// The account who has been proposed to take over the ownership.
     /// `None` if there isn't a pending ownership transfer.
-    pending_owner: Option<T>,
+    pub pending_owner: Option<T>,
 
     /// The deadline for the pending owner to accept the ownership.
     /// `None` if there isn't a pending ownership transfer, or if a transfer
     /// exists and it doesn't have a deadline.
-    pending_expiry: Option<Expiration>,
+    pub pending_expiry: Option<Expiration>,
 }
 
 #[derive(thiserror::Error, Debug, PartialEq)]
