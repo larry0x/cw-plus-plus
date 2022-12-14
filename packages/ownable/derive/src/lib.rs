@@ -10,6 +10,7 @@ use syn::{parse_macro_input, AttributeArgs, DataEnum, DeriveInput};
 fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) -> TokenStream {
     use syn::Data::Enum;
 
+    // parse metadata
     let args = parse_macro_input!(metadata as AttributeArgs);
     if let Some(first_arg) = args.first() {
         return syn::Error::new_spanned(first_arg, "macro takes no arguments")
@@ -17,6 +18,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
             .into();
     }
 
+    // parse the left enum
     let mut left: DeriveInput = parse_macro_input!(left);
     let Enum(DataEnum {
         variants,
@@ -27,6 +29,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
             .into();
     };
 
+    // parse the right enum
     let right: DeriveInput = parse_macro_input!(right);
     let Enum(DataEnum {
         variants: to_add,
@@ -37,6 +40,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
             .into();
     };
 
+    // insert variants from the right to the left
     variants.extend(to_add.into_iter());
 
     quote! { #left }.into()
