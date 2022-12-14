@@ -1,6 +1,4 @@
-use cosmwasm_schema::cw_serde;
-
-use cw_ownable_derive::cw_ownable;
+use cw_ownable::cw_ownable;
 
 #[cw_ownable]
 #[cw_serde]

@@ -61,7 +61,7 @@ pub fn cw_ownable(metadata: TokenStream, input: TokenStream) -> TokenStream {
                 /// Any existing pending ownership transfer is overwritten.
                 TransferOwnership {
                     new_owner: ::std::string::String,
-                    expiry: ::std::option::Option<::cw_utils::Expiration>,
+                    expiry: ::std::option::Option<::cw_ownable::Expiration>,
                 },
 
                 /// Accept the pending ownership transfer.

@@ -201,8 +201,6 @@ dependencies = [
 name = "cw-ownable-derive"
 version = "0.1.0"
 dependencies = [
- "cosmwasm-schema",
- "cw-utils",
  "proc-macro2",
  "quote",
  "syn",
