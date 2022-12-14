@@ -201,6 +201,10 @@ pub fn renounce_ownership(store: &mut dyn Storage, sender: &Addr) -> Result<(), 
     .map(|_| ())
 }
 
+//--------------------------------------------------------------------------------------------------
+// Tests
+//--------------------------------------------------------------------------------------------------
+
 #[cfg(test)]
 mod tests {
     use cosmwasm_std::{testing::{mock_dependencies}, Timestamp};
