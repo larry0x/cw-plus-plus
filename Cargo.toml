@@ -10,5 +10,11 @@ license    = "AGPL-3.0-or-later"
 keywords   = ["cosmos", "cosmwasm"]
 
 [workspace.dependencies]
+cosmwasm-schema = "1.1"
 cosmwasm-std    = "1.1"
-cw-storage-plus = "1.0"
+cw-storage-plus = ">=1.0.1"
+cw-utils        = { git = "https://github.com/CosmWasm/cw-utils", tag = "v1.0.1" }
+proc-macro2     = "1"
+quote           = "1"
+syn             = "1"
+thiserror       = "1"
