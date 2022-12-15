@@ -45,6 +45,7 @@ pub use cw_ownable_derive::cw_ownable;
 // re-export this struct which is used by the proc macro
 pub use cw_utils::Expiration;
 
+/// The contract's ownership info
 #[cw_serde]
 pub struct Ownership<T> {
     /// The contract's current owner.
@@ -61,6 +62,7 @@ pub struct Ownership<T> {
     pub pending_expiry: Option<Expiration>,
 }
 
+/// Actions that can be taken to alter the contract's ownership
 #[cw_serde]
 pub enum Action {
     /// Propose to transfer the contract's ownership to another account,
@@ -88,6 +90,7 @@ pub enum Action {
     RenounceOwnership,
 }
 
+/// Errors associated with the contract's ownership
 #[derive(thiserror::Error, Debug, PartialEq)]
 pub enum OwnershipError {
     #[error("{0}")]
@@ -109,6 +112,7 @@ pub enum OwnershipError {
     TransferExpired,
 }
 
+/// Storage constant for the contract's ownership
 pub const OWNERSHIP: Item<Ownership<Addr>> = Item::new("ownership");
 
 /// Set the given address as the contract owner.
