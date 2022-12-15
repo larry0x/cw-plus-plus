@@ -57,7 +57,7 @@ pub fn cw_ownable(metadata: TokenStream, input: TokenStream) -> TokenStream {
                 /// can be either to propose transferring ownership to an account,
                 /// accept a pending ownership transfer, or renounce the ownership
                 /// permanently.
-                UpdateOwnership(Action),
+                UpdateOwnership(::cw_ownable::Action),
             }
         }
         .into(),
