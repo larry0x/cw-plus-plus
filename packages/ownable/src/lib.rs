@@ -258,7 +258,7 @@ fn renounce_ownership(
 
 #[cfg(test)]
 mod tests {
-    use cosmwasm_std::{testing::{mock_dependencies}, Timestamp};
+    use cosmwasm_std::{testing::mock_dependencies, Timestamp};
 
     use super::*;
 
@@ -352,7 +352,7 @@ mod tests {
                 Action::TransferOwnership {
                     new_owner: pumpkin.to_string(),
                     expiry: Some(Expiration::AtHeight(42069)),
-                }
+                },
             )
             .unwrap();
             assert_eq!(
