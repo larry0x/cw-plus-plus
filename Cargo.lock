@@ -198,7 +198,7 @@ dependencies = [
 
 [[package]]
 name = "cw-ownable"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
@@ -210,7 +210,7 @@ dependencies = [
 
 [[package]]
 name = "cw-ownable-derive"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "proc-macro2",
  "quote",
