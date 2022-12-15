@@ -18,27 +18,28 @@ enum ExecuteMsg {
 }
 ```
 
-The macro inserts three variants, `{Transfer,Accept,Renounce}Ownership` to the enum:
+The macro inserts a new variant, `UpdateOwnership` to the enum:
 
 ```rust
 #[cw_serde]
 enum ExecuteMsg {
-    TransferOwnership {
-        new_owner: String,
-        expiry: Option<Expiration>,
-    },
-    AcceptOwnership {},
-    RenounceOwnership {},
+    UpdateOwnership(cw_ownable::Action),
     Foo {},
     Bar {},
 }
 ```
 
-Handle the messages using the functions provided by this crate:
+Where `Action` can be one of three:
+
+- Propose to transfer the contract's ownership to another account
+- Accept the proposed ownership transfer
+- Renounce the ownership, permanently setting the contract's owner to vacant
+
+Handle the messages using the `update_ownership` function provided by this crate:
 
 ```rust
 use cosmwasm_std::{entry_point, DepsMut, Env, MessageInfo, Response};
-use cw_ownable::{cw_serde, OwnershipError};
+use cw_ownable::{cw_serde, update_ownership, OwnershipError};
 
 #[entry_point]
 pub fn execute(
@@ -48,18 +49,9 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, OwnershipError> {
     match msg {
-        ExecuteMsg::TransferOwnership {
-            new_owner,
-            expiry,
-        } => {
-            cw_ownable::transfer_ownership(deps, &info.sender, &new_owner, expiry)?;
-        },
-        ExecuteMsg::AcceptOwnership {} => {
-            cw_ownable::accept_ownership(deps.storage, &env.block, info.sender)?;
-        },
-        ExecuteMsg::RenounceOwnership {} => {
-            cw_ownable::renounce_ownership(deps.storage, &info.sender)?;
-        },
+        ExecuteMsg::UpdateOwnership(action) => {
+            update_ownership(deps, &env.block, &info.sender, action)?;
+        }
         _ => unimplemneted!(),
     }
     Ok(Response::new())
