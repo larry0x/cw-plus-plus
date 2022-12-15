@@ -1,5 +1,5 @@
 use cosmwasm_schema::cw_serde;
-use cw_ownable::cw_ownable;
+use cw_ownable::{cw_ownable, Action};
 
 #[cw_ownable]
 #[cw_serde]
@@ -17,12 +17,12 @@ fn derive_execute_variants() {
 
     // If this compiles we have won.
     match my_enum {
-        MyEnum::TransferOwnership {
+        MyEnum::UpdateOwnership(Action::TransferOwnership {
             new_owner: _,
             expiry: _,
-        }
-        | MyEnum::AcceptOwnership {}
-        | MyEnum::RenounceOwnership {}
+        })
+        | MyEnum::UpdateOwnership(Action::AcceptOwnership)
+        | MyEnum::UpdateOwnership(Action::RenounceOwnership)
         | MyEnum::Foo
         | MyEnum::Bar(_)
         | MyEnum::Fuzz {

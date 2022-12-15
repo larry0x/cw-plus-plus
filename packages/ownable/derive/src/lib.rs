@@ -53,29 +53,11 @@ pub fn cw_ownable(metadata: TokenStream, input: TokenStream) -> TokenStream {
         input,
         quote! {
             enum Right {
-                /// Propose to transfer the contract's ownership to another account,
-                /// optionally with an expiry time.
-                ///
-                /// Can only be called by the contract's current owner.
-                ///
-                /// Any existing pending ownership transfer is overwritten.
-                TransferOwnership {
-                    new_owner: ::std::string::String,
-                    expiry: ::std::option::Option<::cw_ownable::Expiration>,
-                },
-
-                /// Accept the pending ownership transfer.
-                ///
-                /// Can only be called by the pending owner.
-                AcceptOwnership {},
-
-                /// Give up the contract's ownership and the possibility of appointing
-                /// a new owner.
-                ///
-                /// Can only be invoked by the contract's current owner.
-                ///
-                /// Any existing pending ownership transfer is canceled.
-                RenounceOwnership {},
+                /// Update the contract's ownership. The `action` to be provided
+                /// can be either to propose transferring ownership to an account,
+                /// accept a pending ownership transfer, or renounce the ownership
+                /// permanently.
+                UpdateOwnership(Action),
             }
         }
         .into(),
