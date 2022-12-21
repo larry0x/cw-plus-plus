@@ -12,7 +12,7 @@ keywords   = ["cosmos", "cosmwasm"]
 [workspace.dependencies]
 cosmwasm-schema = "1.1"
 cosmwasm-std    = "1.1"
-cw-storage-plus = ">=1.0.1"
+cw-storage-plus = "1.0"
 cw-utils        = "1.0"
 proc-macro2     = "1"
 quote           = "1"
