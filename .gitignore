@@ -1,5 +1,9 @@
-# Rust
-target
+# rust
+target/
 
-# macOS
+# editors
+.idea/
+.vscode/
+
+# macos
 .DS_Store
