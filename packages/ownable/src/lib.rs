@@ -577,7 +577,7 @@ mod tests {
                 Attribute::new("owner", "blue"),
                 Attribute::new("pending_owner", "none"),
                 Attribute::new("pending_expiry", "expiration: never")
-            ]
-        )
+            ],
+        );
     }
 }
