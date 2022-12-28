@@ -1,7 +1,9 @@
 #![doc = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/README.md"))]
 
+use std::fmt::Display;
+
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, BlockInfo, DepsMut, StdError, StdResult, Storage};
+use cosmwasm_std::{Addr, Api, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
 use cw_storage_plus::Item;
 
 /// Append `cw-ownable`'s execute message variants to an enum.
@@ -39,7 +41,7 @@ use cw_storage_plus::Item;
 /// }
 /// ```
 ///
-/// Note, `#[cw_serde]` must be applied _before_ `#[cw_serde]`.
+/// Note, `#[cw_ownable]` must be applied _before_ `#[cw_serde]`.
 pub use cw_ownable_derive::cw_ownable;
 
 // re-export this struct which is used by the proc macro
@@ -113,18 +115,18 @@ pub enum OwnershipError {
 }
 
 /// Storage constant for the contract's ownership
-pub const OWNERSHIP: Item<Ownership<Addr>> = Item::new("ownership");
+const OWNERSHIP: Item<Ownership<Addr>> = Item::new("ownership");
 
 /// Set the given address as the contract owner.
 ///
 /// This function is only intended to be used only during contract instantiation.
-pub fn initialize_owner(deps: DepsMut, owner: &str) -> StdResult<()> {
+pub fn initialize_owner(storage: &mut dyn Storage, api: &dyn Api, owner: &str) -> StdResult<()> {
     let ownership = Ownership {
-        owner: Some(deps.api.addr_validate(owner)?),
+        owner: Some(api.addr_validate(owner)?),
         pending_owner: None,
         pending_expiry: None,
     };
-    OWNERSHIP.save(deps.storage, &ownership)
+    OWNERSHIP.save(storage, &ownership)
 }
 
 /// Assert that an account is the contract's current owner.
@@ -160,6 +162,62 @@ pub fn update_ownership(
         Action::AcceptOwnership => accept_ownership(deps.storage, block, sender),
         Action::RenounceOwnership => renounce_ownership(deps.storage, sender),
     }
+}
+
+/// Get the current ownership value.
+pub fn get_ownership(storage: &dyn Storage) -> StdResult<Ownership<Addr>> {
+    OWNERSHIP.load(storage)
+}
+
+impl<T> Ownership<T>
+where
+    T: Display,
+{
+    /// Serializes the current ownership state as attributes which may
+    /// be used in a message response. Serialization is done according
+    /// to the std::fmt::Display implementation for `T` and
+    /// `cosmwasm_std::Expiration` (for `pending_expiry`). If an
+    /// ownership field has no value, `"none"` will be serialized.
+    ///
+    /// Attribute keys used:
+    ///  - owner
+    ///  - pending_owner
+    ///  - pending_expiry
+    ///
+    /// Callers should take care not to use these keys elsewhere
+    /// in their response as CosmWasm will override reused attribute
+    /// keys.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use cw_utils::Expiration;
+    ///
+    /// assert_eq!(
+    ///     Ownership {
+    ///         owner: Some("blue"),
+    ///         pending_owner: None,
+    ///         pending_expiry: Some(Expiration::Never {})
+    ///     }
+    ///     .into_attributes(),
+    ///     vec![
+    ///         Attribute::new("owner", "blue"),
+    ///         Attribute::new("pending_owner", "none"),
+    ///         Attribute::new("pending_expiry", "expiration: never")
+    ///     ],
+    /// )
+    /// ```
+    pub fn into_attributes(self) -> Vec<Attribute> {
+        vec![
+            Attribute::new("owner", none_or(self.owner.as_ref())),
+            Attribute::new("pending_owner", none_or(self.pending_owner.as_ref())),
+            Attribute::new("pending_expiry", none_or(self.pending_expiry.as_ref())),
+        ]
+    }
+}
+
+fn none_or<T: Display>(or: Option<&T>) -> String {
+    or.map_or_else(|| "none".to_string(), |or| format!("{}", or))
 }
 
 /// Propose to transfer the contract's ownership to the given address, with an
@@ -287,7 +345,7 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, _, _] = mock_addresses();
 
-        initialize_owner(deps.as_mut(), larry.as_str()).unwrap();
+        initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
 
         let ownership = OWNERSHIP.load(deps.as_ref().storage).unwrap();
         assert_eq!(
@@ -307,7 +365,7 @@ mod tests {
 
         // case 1. owner has not renounced
         {
-            initialize_owner(deps.as_mut(), larry.as_str()).unwrap();
+            initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
 
             let res = assert_owner(deps.as_ref().storage, &larry);
             assert!(res.is_ok());
@@ -330,7 +388,7 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, jake, pumpkin] = mock_addresses();
 
-        initialize_owner(deps.as_mut(), larry.as_str()).unwrap();
+        initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
 
         // non-owner cannot transfer ownership
         {
@@ -378,7 +436,7 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, jake, pumpkin] = mock_addresses();
 
-        initialize_owner(deps.as_mut(), larry.as_str()).unwrap();
+        initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
 
         // cannot accept ownership when there isn't a pending ownership transfer
         {
@@ -503,5 +561,23 @@ mod tests {
             .unwrap_err();
             assert_eq!(err, OwnershipError::NoOwner);
         }
+    }
+
+    #[test]
+    fn into_attributes_works() {
+        use cw_utils::Expiration;
+        assert_eq!(
+            Ownership {
+                owner: Some("blue"),
+                pending_owner: None,
+                pending_expiry: Some(Expiration::Never {})
+            }
+            .into_attributes(),
+            vec![
+                Attribute::new("owner", "blue"),
+                Attribute::new("pending_owner", "none"),
+                Attribute::new("pending_expiry", "expiration: never")
+            ],
+        );
     }
 }
