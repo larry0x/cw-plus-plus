@@ -190,8 +190,9 @@ where
     ///
     /// # Example
     ///
-    /// ```
+    /// ```rust
     /// use cw_utils::Expiration;
+    ///
     /// assert_eq!(
     ///     Ownership {
     ///         owner: Some("blue"),
@@ -203,7 +204,7 @@ where
     ///         Attribute::new("owner", "blue"),
     ///         Attribute::new("pending_owner", "none"),
     ///         Attribute::new("pending_expiry", "expiration: never")
-    ///     ]
+    ///     ],
     /// )
     /// ```
     pub fn into_attributes(self) -> Vec<Attribute> {
@@ -216,7 +217,7 @@ where
 }
 
 fn none_or<T: Display>(or: Option<&T>) -> String {
-    or.map(|or| format!("{}", or)).unwrap_or_else(|| "none".to_string())
+    or.map_or_else(|| "none".to_string(), |or| format!("{}", or))
 }
 
 /// Propose to transfer the contract's ownership to the given address, with an
@@ -324,7 +325,11 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
-        [Addr::unchecked("larry"), Addr::unchecked("jake"), Addr::unchecked("pumpkin")]
+        [
+            Addr::unchecked("larry"),
+            Addr::unchecked("jake"),
+            Addr::unchecked("pumpkin"),
+        ]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
