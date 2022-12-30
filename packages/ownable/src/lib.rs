@@ -120,9 +120,13 @@ const OWNERSHIP: Item<Ownership<Addr>> = Item::new("ownership");
 /// Set the given address as the contract owner.
 ///
 /// This function is only intended to be used only during contract instantiation.
-pub fn initialize_owner(storage: &mut dyn Storage, api: &dyn Api, owner: &str) -> StdResult<()> {
+pub fn initialize_owner(
+    storage: &mut dyn Storage,
+    api: &dyn Api,
+    owner: Option<&str>,
+) -> StdResult<()> {
     let ownership = Ownership {
-        owner: Some(api.addr_validate(owner)?),
+        owner: owner.map(|h| api.addr_validate(h)).transpose()?,
         pending_owner: None,
         pending_expiry: None,
     };
@@ -325,11 +329,7 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
-        [
-            Addr::unchecked("larry"),
-            Addr::unchecked("jake"),
-            Addr::unchecked("pumpkin"),
-        ]
+        [Addr::unchecked("larry"), Addr::unchecked("jake"), Addr::unchecked("pumpkin")]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
@@ -345,7 +345,7 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, _, _] = mock_addresses();
 
-        initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
+        initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
         let ownership = OWNERSHIP.load(deps.as_ref().storage).unwrap();
         assert_eq!(
@@ -359,13 +359,28 @@ mod tests {
     }
 
     #[test]
+    fn initialize_ownership_no_owner() {
+        let mut deps = mock_dependencies();
+        initialize_owner(&mut deps.storage, &deps.api, None).unwrap();
+        let ownership = OWNERSHIP.load(deps.as_ref().storage).unwrap();
+        assert_eq!(
+            ownership,
+            Ownership {
+                owner: None,
+                pending_owner: None,
+                pending_expiry: None,
+            },
+        );
+    }
+
+    #[test]
     fn asserting_ownership() {
         let mut deps = mock_dependencies();
         let [larry, jake, _] = mock_addresses();
 
         // case 1. owner has not renounced
         {
-            initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
+            initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
             let res = assert_owner(deps.as_ref().storage, &larry);
             assert!(res.is_ok());
@@ -388,7 +403,7 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, jake, pumpkin] = mock_addresses();
 
-        initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
+        initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
         // non-owner cannot transfer ownership
         {
@@ -436,7 +451,7 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, jake, pumpkin] = mock_addresses();
 
-        initialize_owner(&mut deps.storage, &deps.api, larry.as_str()).unwrap();
+        initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
         // cannot accept ownership when there isn't a pending ownership transfer
         {
