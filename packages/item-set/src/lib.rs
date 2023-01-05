@@ -2,18 +2,16 @@
 
 use std::marker::PhantomData;
 
-use cosmwasm_std::{Empty, StdResult, Storage};
-use cw_storage_plus::{Key, KeyDeserialize, Path, PrimaryKey};
-
-#[cfg(feature = "counter")]
-use cosmwasm_std::StdError;
-#[cfg(feature = "counter")]
-use cw_storage_plus::Item;
-
 #[cfg(feature = "iterator")]
 use cosmwasm_std::Order;
+#[cfg(feature = "counter")]
+use cosmwasm_std::StdError;
+use cosmwasm_std::{Empty, StdResult, Storage};
+#[cfg(feature = "counter")]
+use cw_storage_plus::Item;
 #[cfg(feature = "iterator")]
 use cw_storage_plus::{Bound, Prefix, Prefixer};
+use cw_storage_plus::{Key, KeyDeserialize, Path, PrimaryKey};
 
 /// A set of non-duplicate items.
 ///
@@ -85,10 +83,7 @@ where
     /// This is copied from
     /// https://github.com/CosmWasm/cw-plus/blob/v0.14.0/packages/storage-plus/src/map.rs#L47-L52
     fn key(&self, item: T) -> Path<Empty> {
-        Path::new(
-            self.namespace,
-            &item.key().iter().map(Key::as_ref).collect::<Vec<_>>(),
-        )
+        Path::new(self.namespace, &item.key().iter().map(Key::as_ref).collect::<Vec<_>>())
     }
 
     /// Returns `true` if the set contains an item
@@ -196,7 +191,9 @@ where
 mod tests {
     #[cfg(feature = "iterator")]
     use std::ops::Range;
+
     use cosmwasm_std::testing::MockStorage;
+
     use super::*;
 
     const NAMESPACE: &str = "names";
@@ -353,11 +350,7 @@ mod tests {
     fn prefixes() {
         let mut store = MockStorage::default();
 
-        let tuples = vec![
-            (1u64, "larry"),
-            (1u64, "jake"),
-            (2u64, "pumpkin"),
-        ];
+        let tuples = vec![(1u64, "larry"), (1u64, "jake"), (2u64, "pumpkin")];
 
         for tuple in &tuples {
             TUPLES.insert(&mut store, *tuple).unwrap();

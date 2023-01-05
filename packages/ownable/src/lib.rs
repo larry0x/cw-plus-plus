@@ -4,8 +4,6 @@ use std::fmt::Display;
 
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Api, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
-use cw_storage_plus::Item;
-
 /// Append `cw-ownable`'s execute message variants to an enum.
 ///
 /// For example, apply the `cw_ownable` macro to the following enum:
@@ -43,7 +41,7 @@ use cw_storage_plus::Item;
 ///
 /// Note, `#[cw_ownable]` must be applied _before_ `#[cw_serde]`.
 pub use cw_ownable_derive::cw_ownable;
-
+use cw_storage_plus::Item;
 // re-export this struct which is used by the proc macro
 pub use cw_utils::Expiration;
 
