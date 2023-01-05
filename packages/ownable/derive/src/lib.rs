@@ -45,6 +45,42 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     quote! { #left }.into()
 }
 
+/// Append `cw-ownable`'s execute message variants to an enum.
+///
+/// For example, apply the `cw_ownable` macro to the following enum:
+///
+/// ```rust
+/// use cosmwasm_schema::cw_serde;
+/// use cw_ownable::cw_ownable;
+///
+/// #[cw_ownable]
+/// #[cw_serde]
+/// enum ExecuteMsg {
+///     Foo {},
+///     Bar {},
+/// }
+/// ```
+///
+/// Is equivalent to:
+///
+/// ```rust
+/// use cosmwasm_schema::cw_serde;
+/// use cw_utils::Expiration;
+///
+/// #[cw_serde]
+/// enum ExecuteMsg {
+///     TransferOwnership {
+///         new_owner: String,
+///         expiry: Option<Expiration>,
+///     },
+///     AcceptOwnership {},
+///     RenounceOwnership {},
+///     Foo {},
+///     Bar {},
+/// }
+/// ```
+///
+/// Note, `#[cw_ownable]` must be applied _before_ `#[cw_serde]`.
 #[proc_macro_attribute]
 pub fn cw_ownable(metadata: TokenStream, input: TokenStream) -> TokenStream {
     merge_variants(
