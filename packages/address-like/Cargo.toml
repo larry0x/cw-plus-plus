@@ -1,0 +1,16 @@
+[package]
+name        = "cw-address-like"
+version     = "1.0.2"
+description = "A trait that marks unchecked or checked CosmWasm address strings"
+authors     = { workspace = true }
+edition     = { workspace = true }
+homepage    = { workspace = true }
+repository  = { workspace = true }
+license     = { workspace = true }
+keywords    = { workspace = true }
+
+[lib]
+doctest = false # disable doc tests
+
+[dependencies]
+cosmwasm-std = { workspace = true }

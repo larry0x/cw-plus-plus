@@ -183,6 +183,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-address-like"
+version = "1.0.2"
+dependencies = [
+ "cosmwasm-std",
+]
+
+[[package]]
 name = "cw-item-set"
 version = "0.7.0"
 dependencies = [
