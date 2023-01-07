@@ -1,0 +1,18 @@
+[package]
+name        = "cw-optional-indexes"
+version     = "0.1.0"
+description = "Index types for CosmWasm maps where an item may or may not have an index"
+authors     = { workspace = true }
+edition     = { workspace = true }
+homepage    = { workspace = true }
+repository  = { workspace = true }
+license     = { workspace = true }
+keywords    = { workspace = true }
+
+[lib]
+doctest = false # disable doc tests
+
+[dependencies]
+cosmwasm-std    = { workspace = true }
+cw-storage-plus = { workspace = true }
+serde           = { workspace = true }

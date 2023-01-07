@@ -198,6 +198,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-optional-indexes"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-std",
+ "cw-storage-plus",
+ "serde",
+]
+
+[[package]]
 name = "cw-ownable"
 version = "0.3.0"
 dependencies = [
