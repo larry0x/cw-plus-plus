@@ -1,0 +1,20 @@
+[package]
+name        = "cw-unique-vec"
+version     = "0.1.0"
+description = "A vector type that throws an error if there are duplicates"
+authors     = { workspace = true }
+edition     = { workspace = true }
+homepage    = { workspace = true }
+repository  = { workspace = true }
+license     = { workspace = true }
+keywords    = { workspace = true }
+
+[lib]
+doctest = false
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std    = { workspace = true }
+schemars        = { workspace = true }
+serde           = { workspace = true }
+thiserror       = { workspace = true }
