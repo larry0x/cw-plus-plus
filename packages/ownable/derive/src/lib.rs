@@ -117,11 +117,12 @@ pub fn cw_ownable_execute(metadata: TokenStream, input: TokenStream) -> TokenStr
 ///
 /// ```rust
 /// use cosmwasm_schema::cw_serde;
+/// use cw_ownable::Ownership;
 ///
 /// #[cw_serde]
 /// #[derive(QueryResponses)]
 /// enum ExecuteMsg {
-///     #[returns(OwnershipResponse)]
+///     #[returns(Ownership<String>)]
 ///     Ownership {},
 ///     #[returns(FooResponse)]
 ///     Foo {},
