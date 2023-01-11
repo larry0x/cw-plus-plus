@@ -184,7 +184,7 @@ dependencies = [
 
 [[package]]
 name = "cw-address-like"
-version = "1.0.2"
+version = "1.0.3"
 dependencies = [
  "cosmwasm-std",
 ]
@@ -194,7 +194,7 @@ name = "cw-item-set"
 version = "0.7.0"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus 1.0.1 (git+https://github.com/CosmWasm/cw-storage-plus?rev=a45379e)",
+ "cw-storage-plus",
 ]
 
 [[package]]
@@ -202,25 +202,26 @@ name = "cw-optional-indexes"
 version = "0.1.0"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus 1.0.1 (git+https://github.com/CosmWasm/cw-storage-plus?rev=a45379e)",
+ "cw-storage-plus",
  "serde",
 ]
 
 [[package]]
 name = "cw-ownable"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
+ "cw-address-like",
  "cw-ownable-derive",
- "cw-storage-plus 1.0.1 (git+https://github.com/CosmWasm/cw-storage-plus?rev=a45379e)",
+ "cw-storage-plus",
  "cw-utils",
  "thiserror",
 ]
 
 [[package]]
 name = "cw-ownable-derive"
-version = "0.2.0"
+version = "0.4.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -232,7 +233,7 @@ name = "cw-paginate"
 version = "0.1.0"
 dependencies = [
  "cosmwasm-std",
- "cw-storage-plus 1.0.1 (git+https://github.com/CosmWasm/cw-storage-plus?rev=a45379e)",
+ "cw-storage-plus",
  "serde",
 ]
 
@@ -241,16 +242,6 @@ name = "cw-storage-plus"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "053a5083c258acd68386734f428a5a171b29f7d733151ae83090c6fcc9417ffa"
-dependencies = [
- "cosmwasm-std",
- "schemars",
- "serde",
-]
-
-[[package]]
-name = "cw-storage-plus"
-version = "1.0.1"
-source = "git+https://github.com/CosmWasm/cw-storage-plus?rev=a45379e#a45379ea5c30798f47f1102c2bfcd05c7fed288f"
 dependencies = [
  "cosmwasm-std",
  "schemars",
@@ -280,7 +271,7 @@ checksum = "8fb70cee2cf0b4a8ff7253e6bc6647107905e8eb37208f87d54f67810faa62f8"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
- "cw-storage-plus 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "cw-storage-plus",
  "schemars",
  "serde",
 ]

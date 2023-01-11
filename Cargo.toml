@@ -10,12 +10,14 @@ license    = "AGPL-3.0-or-later"
 keywords   = ["cosmos", "cosmwasm"]
 
 [workspace.dependencies]
-cosmwasm-schema = "1.1"
-cosmwasm-std    = "1.1"
-cw-storage-plus = { git = "https://github.com/CosmWasm/cw-storage-plus", rev = "a45379e" }
-cw-utils        = "1.0"
-proc-macro2     = "1"
-quote           = "1"
-serde           = { version = "1", default-features = false }
-syn             = "1"
-thiserror       = "1"
+cosmwasm-schema   = "1.1"
+cosmwasm-std      = "1.1"
+cw-address-like   = { version = "1.0.3", path = "./packages/address-like" }
+cw-ownable-derive = { version = "0.4.0", path = "./packages/ownable/derive" }
+cw-storage-plus   = "1.0"
+cw-utils          = "1.0"
+proc-macro2       = "1"
+quote             = "1"
+serde             = { version = "1", default-features = false }
+syn               = "1"
+thiserror         = "1"

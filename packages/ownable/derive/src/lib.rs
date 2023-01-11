@@ -45,15 +45,15 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     quote! { #left }.into()
 }
 
-/// Append `cw-ownable`'s execute message variants to an enum.
+/// Append ownership-related execute message variant(s) to an enum.
 ///
-/// For example, apply the `cw_ownable` macro to the following enum:
+/// For example, apply the `cw_ownable_execute` macro to the following enum:
 ///
 /// ```rust
 /// use cosmwasm_schema::cw_serde;
-/// use cw_ownable::cw_ownable;
+/// use cw_ownable::cw_ownable_exeucte;
 ///
-/// #[cw_ownable]
+/// #[cw_ownable_execute]
 /// #[cw_serde]
 /// enum ExecuteMsg {
 ///     Foo {},
@@ -65,24 +65,19 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
 ///
 /// ```rust
 /// use cosmwasm_schema::cw_serde;
-/// use cw_utils::Expiration;
+/// use cw_ownable::Action;
 ///
 /// #[cw_serde]
 /// enum ExecuteMsg {
-///     TransferOwnership {
-///         new_owner: String,
-///         expiry: Option<Expiration>,
-///     },
-///     AcceptOwnership {},
-///     RenounceOwnership {},
+///     UpdateOwnership(Action),
 ///     Foo {},
 ///     Bar {},
 /// }
 /// ```
 ///
-/// Note, `#[cw_ownable]` must be applied _before_ `#[cw_serde]`.
+/// Note: `#[cw_ownable_execute]` must be applied _before_ `#[cw_serde]`.
 #[proc_macro_attribute]
-pub fn cw_ownable(metadata: TokenStream, input: TokenStream) -> TokenStream {
+pub fn cw_ownable_execute(metadata: TokenStream, input: TokenStream) -> TokenStream {
     merge_variants(
         metadata,
         input,
@@ -93,6 +88,60 @@ pub fn cw_ownable(metadata: TokenStream, input: TokenStream) -> TokenStream {
                 /// accept a pending ownership transfer, or renounce the ownership
                 /// permanently.
                 UpdateOwnership(::cw_ownable::Action),
+            }
+        }
+        .into(),
+    )
+}
+
+/// Append ownership-related query message variant(s) to an enum.
+///
+/// For example, apply the `cw_ownable_query` macro to the following enum:
+///
+/// ```rust
+/// use cosmwasm_schema::{cw_serde, QueryResponses};
+/// use cw_ownable::cw_ownable_query;
+///
+/// #[cw_ownable_query]
+/// #[cw_serde]
+/// #[derive(QueryResponses)]
+/// enum QueryMsg {
+///     #[returns(FooResponse)]
+///     Foo {},
+///     #[returns(BarResponse)]
+///     Bar {},
+/// }
+/// ```
+///
+/// Is equivalent to:
+///
+/// ```rust
+/// use cosmwasm_schema::cw_serde;
+/// use cw_ownable::Ownership;
+///
+/// #[cw_serde]
+/// #[derive(QueryResponses)]
+/// enum ExecuteMsg {
+///     #[returns(Ownership<String>)]
+///     Ownership {},
+///     #[returns(FooResponse)]
+///     Foo {},
+///     #[returns(BarResponse)]
+///     Bar {},
+/// }
+/// ```
+///
+/// Note: `#[cw_ownable_query]` must be applied _before_ `#[cw_serde]`.
+#[proc_macro_attribute]
+pub fn cw_ownable_query(metadata: TokenStream, input: TokenStream) -> TokenStream {
+    merge_variants(
+        metadata,
+        input,
+        quote! {
+            enum Right {
+                /// Query the contract's ownership information
+                #[returns(::cw_ownable::Ownership<String>)]
+                Ownership {},
             }
         }
         .into(),

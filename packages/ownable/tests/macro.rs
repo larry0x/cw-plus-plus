@@ -1,9 +1,9 @@
-use cosmwasm_schema::cw_serde;
-use cw_ownable::{cw_ownable, Action};
+use cosmwasm_schema::{cw_serde, QueryResponses};
+use cw_ownable::{cw_ownable_execute, cw_ownable_query, Action};
 
-#[cw_ownable]
+#[cw_ownable_execute]
 #[cw_serde]
-enum MyEnum {
+enum ExecuteMsg {
     Foo,
     Bar(u64),
     Fuzz {
@@ -11,21 +11,52 @@ enum MyEnum {
     },
 }
 
+#[cw_ownable_query]
+#[cw_serde]
+#[derive(QueryResponses)]
+enum QueryMsg {
+    #[returns(String)]
+    Foo,
+
+    #[returns(String)]
+    Bar(u64),
+
+    #[returns(String)]
+    Fuzz {
+        buzz: String,
+    },
+}
+
 #[test]
 fn derive_execute_variants() {
-    let my_enum = MyEnum::Foo;
+    let msg = ExecuteMsg::Foo;
 
     // If this compiles we have won.
-    match my_enum {
-        MyEnum::UpdateOwnership(Action::TransferOwnership {
+    match msg {
+        ExecuteMsg::UpdateOwnership(Action::TransferOwnership {
             new_owner: _,
             expiry: _,
         })
-        | MyEnum::UpdateOwnership(Action::AcceptOwnership)
-        | MyEnum::UpdateOwnership(Action::RenounceOwnership)
-        | MyEnum::Foo
-        | MyEnum::Bar(_)
-        | MyEnum::Fuzz {
+        | ExecuteMsg::UpdateOwnership(Action::AcceptOwnership)
+        | ExecuteMsg::UpdateOwnership(Action::RenounceOwnership)
+        | ExecuteMsg::Foo
+        | ExecuteMsg::Bar(_)
+        | ExecuteMsg::Fuzz {
+            ..
+        } => "yay",
+    };
+}
+
+#[test]
+fn derive_query_variants() {
+    let msg = QueryMsg::Foo;
+
+    // If this compiles we have won.
+    match msg {
+        QueryMsg::Ownership {}
+        | QueryMsg::Foo
+        | QueryMsg::Bar(_)
+        | QueryMsg::Fuzz {
             ..
         } => "yay",
     };
