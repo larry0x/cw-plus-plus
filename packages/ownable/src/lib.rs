@@ -97,6 +97,22 @@ pub fn initialize_owner(
     OWNERSHIP.save(storage, &ownership)
 }
 
+/// Return Ok(true) if the contract has an owner and it's the given address.
+/// Return Ok(false) if the contract doesn't have an owner, of if it does but
+/// it's not the given address.
+/// Return Err if fails to load ownership info from storage.
+pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
+    let ownership = OWNERSHIP.load(store)?;
+
+    if let Some(owner) = ownership.owner {
+        if *addr == owner {
+            return Ok(true)
+        }
+    }
+
+    Ok(false)
+}
+
 /// Assert that an account is the contract's current owner.
 pub fn assert_owner(store: &dyn Storage, sender: &Addr) -> Result<(), OwnershipError> {
     let ownership = OWNERSHIP.load(store)?;
