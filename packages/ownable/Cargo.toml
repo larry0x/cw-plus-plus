@@ -15,8 +15,8 @@ doctest = false # disable doc tests
 [dependencies]
 cosmwasm-schema   = { workspace = true }
 cosmwasm-std      = { workspace = true }
-cw-address-like   = { path = "../address-like" }
-cw-ownable-derive = { version = "0.2.0", path = "./derive" }
+cw-address-like   = { workspace = true }
+cw-ownable-derive = { workspace = true }
 cw-storage-plus   = { workspace = true }
 cw-utils          = { workspace = true }
 thiserror         = { workspace = true }
