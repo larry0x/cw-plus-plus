@@ -4,13 +4,16 @@ use std::fmt::Display;
 
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Api, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
-pub use cw_ownable_derive::cw_ownable;
+use cw_address_like::AddressLike;
 use cw_storage_plus::Item;
+
+// re-export the proc macros and the Expiration class
+pub use cw_ownable_derive::{cw_ownable_execute, cw_ownable_query};
 pub use cw_utils::Expiration;
 
 /// The contract's ownership info
 #[cw_serde]
-pub struct Ownership<T> {
+pub struct Ownership<T: AddressLike> {
     /// The contract's current owner.
     /// `None` if the ownership has been renounced.
     pub owner: Option<T>,
@@ -134,10 +137,7 @@ pub fn get_ownership(storage: &dyn Storage) -> StdResult<Ownership<Addr>> {
     OWNERSHIP.load(storage)
 }
 
-impl<T> Ownership<T>
-where
-    T: Display,
-{
+impl<T: AddressLike> Ownership<T> {
     /// Serializes the current ownership state as attributes which may
     /// be used in a message response. Serialization is done according
     /// to the std::fmt::Display implementation for `T` and
@@ -279,9 +279,9 @@ fn renounce_ownership(
     })
 }
 
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Tests
-//--------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #[cfg(test)]
 mod tests {
@@ -290,7 +290,11 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
-        [Addr::unchecked("larry"), Addr::unchecked("jake"), Addr::unchecked("pumpkin")]
+        [
+            Addr::unchecked("larry"),
+            Addr::unchecked("jake"),
+            Addr::unchecked("pumpkin"),
+        ]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
@@ -544,7 +548,7 @@ mod tests {
         use cw_utils::Expiration;
         assert_eq!(
             Ownership {
-                owner: Some("blue"),
+                owner: Some("blue".to_string()),
                 pending_owner: None,
                 pending_expiry: Some(Expiration::Never {})
             }
