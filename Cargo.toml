@@ -14,7 +14,7 @@ cosmwasm-schema   = "1.1"
 cosmwasm-std      = "1.1"
 cw-address-like   = { version = "1.0.3", path = "./packages/address-like" }
 cw-ownable-derive = { version = "0.4.0", path = "./packages/ownable/derive" }
-cw-storage-plus   = "1.0"
+cw-storage-plus   = { git = "https://github.com/CosmWasm/cw-storage-plus", rev = "a45379e" } # TODO: update after cw-storage-plus new release
 cw-utils          = "1.0"
 proc-macro2       = "1"
 quote             = "1"
