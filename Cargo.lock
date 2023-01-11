@@ -184,7 +184,7 @@ dependencies = [
 
 [[package]]
 name = "cw-address-like"
-version = "1.0.2"
+version = "1.0.3"
 dependencies = [
  "cosmwasm-std",
 ]
@@ -212,6 +212,7 @@ version = "0.3.0"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
+ "cw-address-like",
  "cw-ownable-derive",
  "cw-storage-plus",
  "cw-utils",
