@@ -10,7 +10,7 @@ A collection of [CosmWasm](https://github.com/CosmWasm/cosmwasm) utilities and h
 | [cw-item-set](./packages/item-set/)                 | v0.7.0  | Set of non-duplicate items for storage                                  |
 | [cw-optional-indexes](./packages/optional-indexes/) | v0.1.0  | Index types for `IndexedMap` where an item may or may not have an index |
 | [cw-ownable](./packages/ownable/)                   | v0.3.0  | Utility for controlling contract ownership                              |
-| [cw-paginate](./packages/paginate/)                 | v0.1.0  | Helper function for interating maps                                     |
+| [cw-paginate](./packages/paginate/)                 | v0.2.0  | Helper function for interating maps                                     |
 
 ## License
 
