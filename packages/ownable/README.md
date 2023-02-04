@@ -93,7 +93,7 @@ pub enum QueryMsg {
 }
 ```
 
-The macro inserts a new variant, `Ownership`
+The macro inserts a new variant, `Ownership`:
 
 ```rust
 #[cw_serde]
