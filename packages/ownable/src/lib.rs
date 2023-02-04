@@ -198,7 +198,7 @@ impl<T: AddressLike> Ownership<T> {
 }
 
 fn none_or<T: Display>(or: Option<&T>) -> String {
-    or.map_or_else(|| "none".to_string(), |or| format!("{}", or))
+    or.map_or_else(|| "none".to_string(), |or| or.to_string())
 }
 
 /// Propose to transfer the contract's ownership to the given address, with an
