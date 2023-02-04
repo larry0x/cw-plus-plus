@@ -4,13 +4,31 @@ Utility for controlling ownership of [CosmWasm](https://github.com/CosmWasm/cosm
 
 ## How to use
 
-Use the `#[cw_ownable]` macro to define your execute message:
+Initialize the owner during instantiation using the `initialize_owner` method provided by this crate:
+
+```rust
+use cosmwasm_std::{entry_point, DepsMut, Env, MessageInfo, Response};
+use cw_ownable::OwnershipError;
+
+#[entry_point]
+pub fn instantiate(
+    deps: DepsMut,
+    env: Env,
+    _info: MessageInfo,
+    msg: InstantiateMsg,
+) -> Result<Response<Empty>, OwnershipError> {
+    cw_ownable::initialize_owner(deps.storage, deps.api, msg.owner.as_deref())?;
+    Ok(Response::new())
+}
+```
+
+Use the `#[cw_ownable_execute]` macro to extend your execute message:
 
 ```rust
 use cosmwasm_schema::cw_serde;
-use cw_ownable::{cw_ownable, Expiration};
+use cw_ownable::cw_ownable_execute;
 
-#[cw_ownable]
+#[cw_ownable_execute]
 #[cw_serde]
 enum ExecuteMsg {
     Foo {},
@@ -55,6 +73,53 @@ pub fn execute(
         _ => unimplemneted!(),
     }
     Ok(Response::new())
+}
+```
+
+Use the `#[cw_ownable_query]` macro to extend your query message:
+
+```rust
+use cosmwasm_schema::{cw_serde, QueryResponses};
+use cw_ownable::cw_ownable_query;
+
+#[cw_ownable_query]
+#[cw_serde]
+#[derive(QueryResponses)]
+pub enum QueryMsg {
+    #[returns(FooResponse)]
+    Foo {},
+    #[returns(BarResponse)]
+    Bar {},
+}
+```
+
+The macro inserts a new variant, `Ownership`:
+
+```rust
+#[cw_serde]
+#[derive(QueryResponses)]
+enum ExecuteMsg {
+    #[returns(Ownership<String>)]
+    Ownership {},
+    #[returns(FooResponse)]
+    Foo {},
+    #[returns(BarResponse)]
+    Bar {},
+}
+```
+
+Handle the message using the `get_ownership` function provided by this crate:
+
+```rust
+use cosmwasm_std::{entry_point, Deps, Env, Binary};
+use cw_ownable::get_ownership;
+
+#[entry_point]
+pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
+    match msg {
+        QueryMsg::Ownership {} => to_binary(&get_ownership(deps.storage)?),
+        _ => unimplemented!(),
+    }
 }
 ```
 
