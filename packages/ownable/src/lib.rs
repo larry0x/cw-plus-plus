@@ -106,7 +106,7 @@ pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
 
     if let Some(owner) = ownership.owner {
         if *addr == owner {
-            return Ok(true)
+            return Ok(true);
         }
     }
 
@@ -198,7 +198,7 @@ impl<T: AddressLike> Ownership<T> {
 }
 
 fn none_or<T: Display>(or: Option<&T>) -> String {
-    or.map_or_else(|| "none".to_string(), |or| format!("{}", or))
+    or.map_or_else(|| "none".to_string(), |or| format!("{or}"))
 }
 
 /// Propose to transfer the contract's ownership to the given address, with an
@@ -306,11 +306,7 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
-        [
-            Addr::unchecked("larry"),
-            Addr::unchecked("jake"),
-            Addr::unchecked("pumpkin"),
-        ]
+        [Addr::unchecked("larry"), Addr::unchecked("jake"), Addr::unchecked("pumpkin")]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
