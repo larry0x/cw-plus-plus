@@ -88,13 +88,14 @@ pub fn initialize_owner(
     storage: &mut dyn Storage,
     api: &dyn Api,
     owner: Option<&str>,
-) -> StdResult<()> {
+) -> StdResult<Ownership<Addr>> {
     let ownership = Ownership {
         owner: owner.map(|h| api.addr_validate(h)).transpose()?,
         pending_owner: None,
         pending_expiry: None,
     };
-    OWNERSHIP.save(storage, &ownership)
+    OWNERSHIP.save(storage, &ownership)?;
+    Ok(ownership)
 }
 
 /// Return Ok(true) if the contract has an owner and it's the given address.
@@ -326,9 +327,12 @@ mod tests {
         let mut deps = mock_dependencies();
         let [larry, _, _] = mock_addresses();
 
-        initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
+        let ownership =
+            initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
-        let ownership = OWNERSHIP.load(deps.as_ref().storage).unwrap();
+        // ownership returned is same as ownership stored.
+        assert_eq!(ownership, OWNERSHIP.load(deps.as_ref().storage).unwrap());
+
         assert_eq!(
             ownership,
             Ownership {
@@ -342,8 +346,7 @@ mod tests {
     #[test]
     fn initialize_ownership_no_owner() {
         let mut deps = mock_dependencies();
-        initialize_owner(&mut deps.storage, &deps.api, None).unwrap();
-        let ownership = OWNERSHIP.load(deps.as_ref().storage).unwrap();
+        let ownership = initialize_owner(&mut deps.storage, &deps.api, None).unwrap();
         assert_eq!(
             ownership,
             Ownership {
@@ -527,15 +530,17 @@ mod tests {
 
         // owner properly renounces
         {
-            let res = update_ownership(
+            let ownership = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
                 &larry,
                 Action::RenounceOwnership,
-            );
-            assert!(res.is_ok());
+            )
+            .unwrap();
 
-            let ownership = OWNERSHIP.load(deps.as_ref().storage).unwrap();
+            // ownership returned is same as ownership stored.
+            assert_eq!(ownership, OWNERSHIP.load(deps.as_ref().storage).unwrap());
+
             assert_eq!(
                 ownership,
                 Ownership {
