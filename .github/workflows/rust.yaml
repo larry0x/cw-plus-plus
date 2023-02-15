@@ -1,5 +1,7 @@
-on: push
 name: Rust
+
+on: push
+
 jobs:
   check:
     name: Check
@@ -7,12 +9,14 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
           profile: minimal
+
       - name: Check for errors
         uses: actions-rs/cargo@v1
         with:
@@ -20,18 +24,21 @@ jobs:
           args: --locked --tests
         env:
           RUST_BACKTRACE: 1
+
   test:
     name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
           profile: minimal
+
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
@@ -39,12 +46,14 @@ jobs:
           args: --lib --locked --tests
         env:
           RUST_BACKTRACE: 1
+
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -52,6 +61,7 @@ jobs:
           override: true
           profile: minimal
           components: clippy
+
       - name: Run clippy
         uses: actions-rs/cargo@v1
         with:

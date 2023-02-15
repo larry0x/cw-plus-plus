@@ -1,5 +1,7 @@
-on: push
 name: CosmWasm
+
+on: push
+
 jobs:
   build:
     name: Build
@@ -7,6 +9,7 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+
       - name: Install toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -14,6 +17,7 @@ jobs:
           target: wasm32-unknown-unknown
           override: true
           profile: minimal
+
       - name: Build contracts
         uses: actions-rs/cargo@v1
         with:
