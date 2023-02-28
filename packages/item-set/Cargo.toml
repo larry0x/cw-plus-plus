@@ -1,6 +1,6 @@
 [package]
 name        = "cw-item-set"
-version     = "0.7.0"
+version     = "0.7.1"
 description = "Set of non-duplicate items for smart contract store"
 authors     = { workspace = true }
 edition     = { workspace = true }
