@@ -121,7 +121,7 @@ pub fn cw_ownable_execute(metadata: TokenStream, input: TokenStream) -> TokenStr
 ///
 /// #[cw_serde]
 /// #[derive(QueryResponses)]
-/// enum ExecuteMsg {
+/// enum QueryMsg {
 ///     #[returns(Ownership<String>)]
 ///     Ownership {},
 ///     #[returns(FooResponse)]
