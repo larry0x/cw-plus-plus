@@ -5,7 +5,7 @@ members = ["packages/*"]
 authors    = ["larry <gm@larry.engineer>"]
 edition    = "2021"
 homepage   = "https://larry.engineer"
-repository = "https://github.com/steak-enjoyers/cw-plus-plus"
+repository = "https://github.com/larry0x/cw-plus-plus"
 license    = "Apache-2.0"
 keywords   = ["cosmos", "cosmwasm"]
 
