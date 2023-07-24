@@ -98,7 +98,7 @@ The macro inserts a new variant, `Ownership`:
 ```rust
 #[cw_serde]
 #[derive(QueryResponses)]
-enum ExecuteMsg {
+enum QueryMsg {
     #[returns(Ownership<String>)]
     Ownership {},
     #[returns(FooResponse)]
