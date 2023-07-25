@@ -296,7 +296,11 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
-        [Addr::unchecked("larry"), Addr::unchecked("jake"), Addr::unchecked("pumpkin")]
+        [
+            Addr::unchecked("larry"),
+            Addr::unchecked("jake"),
+            Addr::unchecked("pumpkin"),
+        ]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
