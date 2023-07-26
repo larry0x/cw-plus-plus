@@ -107,7 +107,7 @@ pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
 
     if let Some(owner) = ownership.owner {
         if *addr == owner {
-            return Ok(true)
+            return Ok(true);
         }
     }
 
@@ -117,7 +117,11 @@ pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
 /// Assert that an account is the contract's current owner.
 pub fn assert_owner(store: &dyn Storage, sender: &Addr) -> Result<(), OwnershipError> {
     let ownership = OWNERSHIP.load(store)?;
+    check_owner(&ownership, sender)
+}
 
+/// Assert that an account is the contract's current owner.
+fn check_owner(ownership: &Ownership<Addr>, sender: &Addr) -> Result<(), OwnershipError> {
     // the contract must have an owner
     let Some(current_owner) = &ownership.owner else {
         return Err(OwnershipError::NoOwner);
@@ -212,14 +216,7 @@ fn transfer_ownership(
 ) -> Result<Ownership<Addr>, OwnershipError> {
     OWNERSHIP.update(deps.storage, |ownership| {
         // the contract must have an owner
-        let Some(current_owner) = ownership.owner else {
-            return Err(OwnershipError::NoOwner);
-        };
-
-        // the sender must be the current owner
-        if *sender != current_owner {
-            return Err(OwnershipError::NotOwner);
-        }
+        check_owner(&ownership, sender)?;
 
         // NOTE: We don't validate the expiry, i.e. asserting it is later than
         // the current block time.
@@ -233,9 +230,9 @@ fn transfer_ownership(
         // To fix the erorr, the owner can simply invoke `transfer_ownership`
         // again with the correct expiry and overwrite the invalid one.
         Ok(Ownership {
-            owner: Some(current_owner),
             pending_owner: Some(deps.api.addr_validate(new_owner)?),
             pending_expiry: expiry,
+            ..ownership
         })
     })
 }
@@ -278,15 +275,7 @@ fn renounce_ownership(
     sender: &Addr,
 ) -> Result<Ownership<Addr>, OwnershipError> {
     OWNERSHIP.update(store, |ownership| {
-        // the contract must have an owner
-        let Some(current_owner) = &ownership.owner else {
-            return Err(OwnershipError::NoOwner);
-        };
-
-        // the sender must be the current owner
-        if sender != current_owner {
-            return Err(OwnershipError::NotOwner);
-        }
+        check_owner(&ownership, sender)?;
 
         Ok(Ownership {
             owner: None,
