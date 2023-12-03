@@ -70,7 +70,7 @@ pub fn execute(
         ExecuteMsg::UpdateOwnership(action) => {
             update_ownership(deps, &env.block, &info.sender, action)?;
         }
-        _ => unimplemneted!(),
+        _ => unimplemented!(),
     }
     Ok(Response::new())
 }
