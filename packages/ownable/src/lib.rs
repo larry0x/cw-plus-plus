@@ -443,31 +443,33 @@ mod tests {
 
         // non-owner cannot transfer ownership
         {
-            let err = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &jake,
-                Action::TransferOwnership {
-                    new_owner: pumpkin.to_string(),
-                    expiry: None,
-                },
-            )
-            .unwrap_err();
+            let err = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &jake,
+                    Action::TransferOwnership {
+                        new_owner: pumpkin.to_string(),
+                        expiry: None,
+                    },
+                )
+                .unwrap_err();
             assert_eq!(err, OwnershipError::NotOwner);
         }
 
         // owner properly transfers ownership
         {
-            let ownership = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &larry,
-                Action::TransferOwnership {
-                    new_owner: pumpkin.to_string(),
-                    expiry: Some(Expiration::AtHeight(42069)),
-                },
-            )
-            .unwrap();
+            let ownership = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &larry,
+                    Action::TransferOwnership {
+                        new_owner: pumpkin.to_string(),
+                        expiry: Some(Expiration::AtHeight(42069)),
+                    },
+                )
+                .unwrap();
             assert_eq!(
                 ownership,
                 Ownership {
@@ -491,57 +493,62 @@ mod tests {
 
         // cannot accept ownership when there isn't a pending ownership transfer
         {
-            let err = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &pumpkin,
-                Action::AcceptOwnership,
-            )
-            .unwrap_err();
+            let err = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &pumpkin,
+                    Action::AcceptOwnership,
+                )
+                .unwrap_err();
             assert_eq!(err, OwnershipError::TransferNotFound);
         }
 
-        OWNERSHIP.transfer_ownership(
-            deps.as_mut(),
-            &larry,
-            pumpkin.as_str(),
-            Some(Expiration::AtHeight(42069)),
-        )
-        .unwrap();
+        OWNERSHIP
+            .transfer_ownership(
+                deps.as_mut(),
+                &larry,
+                pumpkin.as_str(),
+                Some(Expiration::AtHeight(42069)),
+            )
+            .unwrap();
 
         // non-pending owner cannot accept ownership
         {
-            let err = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &jake,
-                Action::AcceptOwnership,
-            )
-            .unwrap_err();
+            let err = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &jake,
+                    Action::AcceptOwnership,
+                )
+                .unwrap_err();
             assert_eq!(err, OwnershipError::NotPendingOwner);
         }
 
         // cannot accept ownership if deadline has passed
         {
-            let err = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(69420),
-                &pumpkin,
-                Action::AcceptOwnership,
-            )
-            .unwrap_err();
+            let err = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(69420),
+                    &pumpkin,
+                    Action::AcceptOwnership,
+                )
+                .unwrap_err();
             assert_eq!(err, OwnershipError::TransferExpired);
         }
 
         // pending owner properly accepts ownership before deadline
         {
-            let ownership = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(10000),
-                &pumpkin,
-                Action::AcceptOwnership,
-            )
-            .unwrap();
+            let ownership = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(10000),
+                    &pumpkin,
+                    Action::AcceptOwnership,
+                )
+                .unwrap();
             assert_eq!(
                 ownership,
                 Ownership {
@@ -570,25 +577,27 @@ mod tests {
 
         // non-owner cannot renounce
         {
-            let err = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &jake,
-                Action::RenounceOwnership,
-            )
-            .unwrap_err();
+            let err = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &jake,
+                    Action::RenounceOwnership,
+                )
+                .unwrap_err();
             assert_eq!(err, OwnershipError::NotOwner);
         }
 
         // owner properly renounces
         {
-            let ownership = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &larry,
-                Action::RenounceOwnership,
-            )
-            .unwrap();
+            let ownership = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &larry,
+                    Action::RenounceOwnership,
+                )
+                .unwrap();
 
             // ownership returned is same as ownership stored.
             assert_eq!(ownership, OWNERSHIP.item.load(deps.as_ref().storage).unwrap());
@@ -605,13 +614,14 @@ mod tests {
 
         // cannot renounce twice
         {
-            let err = OWNERSHIP.update_ownership(
-                deps.as_mut(),
-                &mock_block_at_height(12345),
-                &larry,
-                Action::RenounceOwnership,
-            )
-            .unwrap_err();
+            let err = OWNERSHIP
+                .update_ownership(
+                    deps.as_mut(),
+                    &mock_block_at_height(12345),
+                    &larry,
+                    Action::RenounceOwnership,
+                )
+                .unwrap_err();
             assert_eq!(err, OwnershipError::NoOwner);
         }
     }
