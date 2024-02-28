@@ -40,7 +40,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     };
 
     // insert variants from the right to the left
-    variants.extend(to_add.into_iter());
+    variants.extend(to_add);
 
     quote! { #left }.into()
 }
