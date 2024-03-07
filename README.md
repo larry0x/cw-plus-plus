@@ -9,7 +9,7 @@ A collection of [CosmWasm][1] utilities and helper libraries.
 | [cw-address-like][2]     | v1.0.4  | A trait that marks unchecked or checked address strings                 |
 | [cw-item-set][3]         | v0.7.1  | Set of non-duplicate items for storage                                  |
 | [cw-optional-indexes][4] | v0.1.1  | Index types for `IndexedMap` where an item may or may not have an index |
-| [cw-ownable][5]          | v0.5.1  | Utility for controlling contract ownership                              |
+| [cw-ownable][5]          | v0.6.0  | Utility for controlling contract ownership                              |
 | [cw-paginate][6]         | v0.2.1  | Helper function for interating maps                                     |
 
 ## License
