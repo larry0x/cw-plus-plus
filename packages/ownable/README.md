@@ -123,6 +123,16 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
 }
 ```
 
+You can use ownership for other purposes:
+
+```rust
+use cw_ownable::OwnershipStore;
+
+pub const CREATOR: OwnershipStore = OwnershipStore::new("creator");
+```
+
+`CREATOR` has all functions in place: `initialize_owner`, `is_owner`, `assert_owner`, and `get_ownership`.
+
 ## License
 
 Contents of this crate at or prior to version `0.5.0` are published under [GNU Affero General Public License v3](https://github.com/steak-enjoyers/cw-plus-plus/blob/9c8fcf1c95b74dd415caf5602068c558e9d16ecc/LICENSE) or later; contents after the said version are published under [Apache-2.0](../../LICENSE) license.

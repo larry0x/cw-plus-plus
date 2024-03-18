@@ -22,7 +22,8 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     let Enum(DataEnum {
         variants,
         ..
-    }) = &mut left.data else {
+    }) = &mut left.data
+    else {
         return syn::Error::new(left.ident.span(), "only enums can accept variants")
             .to_compile_error()
             .into();
@@ -33,14 +34,15 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     let Enum(DataEnum {
         variants: to_add,
         ..
-    }) = right.data else {
+    }) = right.data
+    else {
         return syn::Error::new(left.ident.span(), "only enums can provide variants")
             .to_compile_error()
             .into();
     };
 
     // insert variants from the right to the left
-    variants.extend(to_add.into_iter());
+    variants.extend(to_add);
 
     quote! { #left }.into()
 }
