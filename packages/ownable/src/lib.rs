@@ -296,10 +296,11 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
+
         [
-            Addr::unchecked("larry"),
-            Addr::unchecked("jake"),
-            Addr::unchecked("pumpkin"),
+            Addr::unchecked("cosmwasm1vk8458e0lkry6vg75alncg7hwvhjdegvym9tnw"),
+            Addr::unchecked("cosmwasm19dw4nfwewj9r6vnhayjakh97ee4w34v402j42e"),
+            Addr::unchecked("cosmwasm1e0ctlf675uat27mwwclw5276c6d8x49wnwg9qg"),
         ]
     }
 

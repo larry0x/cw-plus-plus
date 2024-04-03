@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, AttributeArgs, DataEnum, DeriveInput};
+use syn::{parse_macro_input, Attribute, DataEnum, DeriveInput};
 
 /// Merges the variants of two enums.
 ///
@@ -10,7 +10,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     use syn::Data::Enum;
 
     // parse metadata
-    let args = parse_macro_input!(metadata as AttributeArgs);
+    let args = parse_macro_input!(metadata  with Attribute::parse_outer);
     if let Some(first_arg) = args.first() {
         return syn::Error::new_spanned(first_arg, "macro takes no arguments")
             .to_compile_error()
