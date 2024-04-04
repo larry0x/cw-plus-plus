@@ -292,16 +292,18 @@ fn renounce_ownership(
 #[cfg(test)]
 mod tests {
     use cosmwasm_std::{testing::mock_dependencies, Timestamp};
+    use cosmwasm_std::testing::MockApi;
 
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
+        let api = MockApi::default();
 
         [
-            Addr::unchecked("cosmwasm1vk8458e0lkry6vg75alncg7hwvhjdegvym9tnw"),
-            Addr::unchecked("cosmwasm19dw4nfwewj9r6vnhayjakh97ee4w34v402j42e"),
-            Addr::unchecked("cosmwasm1e0ctlf675uat27mwwclw5276c6d8x49wnwg9qg"),
-        ]
+            api.addr_make("larry"),
+            api.addr_make("jake"),
+            api.addr_make("pumpkin")
+       ]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
