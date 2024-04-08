@@ -52,7 +52,7 @@ where
 ///
 /// TODO: add docs
 pub fn paginate_map_prefix<'a, K, T, R, E, F>(
-    map: &Map< K, T>,
+    map: &Map<K, T>,
     store: &dyn Storage,
     prefix: K::Prefix,
     start: Option<Bound<'a, K::Suffix>>,
