@@ -21,7 +21,7 @@ pub struct Set<'a, T> {
     namespace: &'a [u8],
 
     #[cfg(feature = "counter")]
-    counter: Item< u64>,
+    counter: Item<u64>,
 
     item_type: PhantomData<T>,
 }
