@@ -18,7 +18,7 @@ pub(crate) struct UniqueRef<T> {
 /// unique, while base accounts are not indexed.
 pub struct OptionalUniqueIndex< IK, T, PK = ()> {
     index: fn(&T) -> Option<IK>,
-    idx_map: Map< IK, UniqueRef<T>>,
+    idx_map: Map<IK, UniqueRef<T>>,
     phantom: PhantomData<PK>,
 }
 
