@@ -75,7 +75,7 @@ where
 ///
 /// TODO: add docs
 pub fn paginate_indexed_map<'a, K, T, I, R, E, F>(
-    map: &IndexedMap< K, T, I>,
+    map: &IndexedMap<K, T, I>,
     store: &dyn Storage,
     start: Option<Bound<'a, K>>,
     limit: Option<u32>,
