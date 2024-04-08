@@ -31,7 +31,7 @@ where
 ///
 /// TODO: add docs
 pub fn paginate_map<'a, K, T, R, E, F>(
-    map: &Map< K, T>,
+    map: &Map<K, T>,
     store: &dyn Storage,
     start: Option<Bound<'a, K>>,
     limit: Option<u32>,
