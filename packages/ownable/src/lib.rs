@@ -291,15 +291,15 @@ fn renounce_ownership(
 
 #[cfg(test)]
 mod tests {
-    use cosmwasm_std::{testing::mock_dependencies, Timestamp};
+    use cosmwasm_std::{testing::{mock_dependencies, MockApi}, Timestamp};
 
     use super::*;
 
-    fn mock_addresses() -> [Addr; 3] {
+    fn mock_addresses(api: &MockApi) -> [Addr; 3] {
         [
-            Addr::unchecked("larry"),
-            Addr::unchecked("jake"),
-            Addr::unchecked("pumpkin"),
+            api.addr_make("larry"),
+            api.addr_make("jake"),
+            api.addr_make("pumpkin"),
         ]
     }
 
@@ -314,7 +314,7 @@ mod tests {
     #[test]
     fn initializing_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, _, _] = mock_addresses();
+        let [larry, _, _] = mock_addresses(&deps.api);
 
         let ownership =
             initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
@@ -349,7 +349,7 @@ mod tests {
     #[test]
     fn asserting_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, _] = mock_addresses();
+        let [larry, jake, _] = mock_addresses(&deps.api);
 
         // case 1. owner has not renounced
         {
@@ -374,7 +374,7 @@ mod tests {
     #[test]
     fn transferring_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, pumpkin] = mock_addresses();
+        let [larry, jake, pumpkin] = mock_addresses(&deps.api);
 
         initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
@@ -422,7 +422,7 @@ mod tests {
     #[test]
     fn accepting_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, pumpkin] = mock_addresses();
+        let [larry, jake, pumpkin] = mock_addresses(&deps.api);
 
         initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
 
@@ -496,7 +496,7 @@ mod tests {
     #[test]
     fn renouncing_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, pumpkin] = mock_addresses();
+        let [larry, jake, pumpkin] = mock_addresses(&deps.api);
 
         let ownership = Ownership {
             owner: Some(larry.clone()),
