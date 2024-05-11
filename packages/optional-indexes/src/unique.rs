@@ -16,14 +16,14 @@ pub(crate) struct UniqueRef<T> {
 /// In cw-sdk, this is used in the `ACCOUNTS` map, where smart contract accounts
 /// are indexed by their labels such that we can enforce that the labels are
 /// unique, while base accounts are not indexed.
-pub struct OptionalUniqueIndex<'a, IK, T, PK = ()> {
+pub struct OptionalUniqueIndex<IK, T, PK = ()> {
     index: fn(&T) -> Option<IK>,
-    idx_map: Map<'a, IK, UniqueRef<T>>,
+    idx_map: Map<IK, UniqueRef<T>>,
     phantom: PhantomData<PK>,
 }
 
-impl<'a, IK, T, PK> OptionalUniqueIndex<'a, IK, T, PK> {
-    pub const fn new(idx_fn: fn(&T) -> Option<IK>, idx_namespace: &'a str) -> Self {
+impl<'a, IK, T, PK> OptionalUniqueIndex<IK, T, PK> {
+    pub const fn new(idx_fn: fn(&T) -> Option<IK>, idx_namespace: &'static str) -> Self {
         Self {
             index: idx_fn,
             idx_map: Map::new(idx_namespace),
@@ -32,7 +32,7 @@ impl<'a, IK, T, PK> OptionalUniqueIndex<'a, IK, T, PK> {
     }
 }
 
-impl<'a, IK, T, PK> OptionalUniqueIndex<'a, IK, T, PK>
+impl<'a, IK, T, PK> OptionalUniqueIndex<IK, T, PK>
 where
     PK: KeyDeserialize,
     IK: PrimaryKey<'a>,
@@ -41,7 +41,7 @@ where
     pub fn load(&self, store: &dyn Storage, key: IK) -> StdResult<(PK::Output, T)> {
         let UniqueRef {
             pk,
-            value
+            value,
         } = self.idx_map.load(store, key)?;
         let key = PK::from_slice(&pk)?;
         Ok((key, value))
@@ -82,13 +82,13 @@ where
     }
 }
 
-impl<'a, IK, T, PK> Index<T> for OptionalUniqueIndex<'a, IK, T, PK>
+impl<'a, IK, T, PK> Index<T> for OptionalUniqueIndex<IK, T, PK>
 where
     T: Serialize + DeserializeOwned + Clone,
     IK: PrimaryKey<'a>,
 {
     fn save(&self, store: &mut dyn Storage, pk: &[u8], data: &T) -> StdResult<()> {
-        // only save data in idx_map if the index in `Some`
+        // only save data in idx_map if the index is `Some`
         if let Some(idx) = (self.index)(data) {
             self.idx_map.update(store, idx, |opt| {
                 if opt.is_some() {

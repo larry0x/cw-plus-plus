@@ -1,6 +1,6 @@
 [package]
 name        = "cw-address-like"
-version     = "1.0.4"
+version     = "2.0.4"
 description = "A trait that marks unchecked or checked CosmWasm address strings"
 authors     = { workspace = true }
 edition     = { workspace = true }

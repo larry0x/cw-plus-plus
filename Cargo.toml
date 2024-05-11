@@ -12,8 +12,8 @@ keywords   = ["cosmos", "cosmwasm"]
 [workspace.dependencies]
 cosmwasm-schema   = "2.0"
 cosmwasm-std      = "2.0"
-cw-address-like   = { version = "1.0.4", path = "./packages/address-like" }
-cw-ownable-derive = { version = "0.5.1", path = "./packages/ownable/derive" }
+cw-address-like   = { version = "2.0.0", path = "./packages/address-like" }
+cw-ownable-derive = { version = "0.6.0", path = "./packages/ownable/derive" }
 cw-storage-plus   = "2.0"
 cw-utils          = "2.0"
 proc-macro2       = "1"

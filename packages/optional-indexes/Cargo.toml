@@ -1,6 +1,6 @@
 [package]
 name        = "cw-optional-indexes"
-version     = "0.1.1"
+version     = "0.2.0"
 description = "Index types for CosmWasm IndexedMaps where an item may or may not have an index"
 authors     = { workspace = true }
 edition     = { workspace = true }
