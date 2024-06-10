@@ -21,7 +21,7 @@ pub struct Set<'a, T> {
     namespace: &'a [u8],
 
     #[cfg(feature = "counter")]
-    counter: Item<'a, u64>,
+    counter: Item<u64>,
 
     item_type: PhantomData<T>,
 }
@@ -40,7 +40,7 @@ impl<'a, T> Set<'a, T> {
 #[cfg(feature = "counter")]
 impl<'a, T> Set<'a, T> {
     /// Create a new instance of the item set with the given map and counter namespaces.
-    pub const fn new(namespace: &'a str, counter_namespace: &'a str) -> Self {
+    pub const fn new(namespace: &'a str, counter_namespace: &'static str) -> Self {
         Set {
             namespace: namespace.as_bytes(),
             counter: Item::new(counter_namespace),
