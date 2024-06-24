@@ -8,7 +8,7 @@ Initialize the owner during instantiation using the `initialize_owner` method pr
 
 ```rust
 use cosmwasm_std::{entry_point, DepsMut, Env, MessageInfo, Response};
-use cw_ownable::OwnershipError;
+use cw_gov_ownable::OwnershipError;
 
 #[entry_point]
 pub fn instantiate(
@@ -17,7 +17,7 @@ pub fn instantiate(
     _info: MessageInfo,
     msg: InstantiateMsg,
 ) -> Result<Response<Empty>, OwnershipError> {
-    cw_ownable::initialize_owner(deps.storage, deps.api, msg.owner.as_deref())?;
+    cw_gov_ownable::initialize_owner(deps.storage, deps.api, msg.owner.as_deref())?;
     Ok(Response::new())
 }
 ```
@@ -26,7 +26,7 @@ Use the `#[cw_ownable_execute]` macro to extend your execute message:
 
 ```rust
 use cosmwasm_schema::cw_serde;
-use cw_ownable::cw_ownable_execute;
+use cw_gov_ownable::cw_ownable_execute;
 
 #[cw_ownable_execute]
 #[cw_serde]
@@ -41,7 +41,7 @@ The macro inserts a new variant, `UpdateOwnership` to the enum:
 ```rust
 #[cw_serde]
 enum ExecuteMsg {
-    UpdateOwnership(cw_ownable::Action),
+    UpdateOwnership(cw_gov_ownable::Action),
     Foo {},
     Bar {},
 }
@@ -57,7 +57,7 @@ Handle the messages using the `update_ownership` function provided by this crate
 
 ```rust
 use cosmwasm_std::{entry_point, DepsMut, Env, MessageInfo, Response};
-use cw_ownable::{cw_serde, update_ownership, OwnershipError};
+use cw_gov_ownable::{cw_serde, update_ownership, OwnershipError};
 
 #[entry_point]
 pub fn execute(
@@ -80,7 +80,7 @@ Use the `#[cw_ownable_query]` macro to extend your query message:
 
 ```rust
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cw_ownable::cw_ownable_query;
+use cw_gov_ownable::cw_ownable_query;
 
 #[cw_ownable_query]
 #[cw_serde]
@@ -112,7 +112,7 @@ Handle the message using the `get_ownership` function provided by this crate:
 
 ```rust
 use cosmwasm_std::{entry_point, Deps, Env, Binary};
-use cw_ownable::get_ownership;
+use cw_gov_ownable::get_ownership;
 
 #[entry_point]
 pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {

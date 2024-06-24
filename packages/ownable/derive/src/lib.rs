@@ -22,7 +22,8 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     let Enum(DataEnum {
         variants,
         ..
-    }) = &mut left.data else {
+    }) = &mut left.data
+    else {
         return syn::Error::new(left.ident.span(), "only enums can accept variants")
             .to_compile_error()
             .into();
@@ -33,7 +34,8 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
     let Enum(DataEnum {
         variants: to_add,
         ..
-    }) = right.data else {
+    }) = right.data
+    else {
         return syn::Error::new(left.ident.span(), "only enums can provide variants")
             .to_compile_error()
             .into();
@@ -51,7 +53,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
 ///
 /// ```rust
 /// use cosmwasm_schema::cw_serde;
-/// use cw_ownable::cw_ownable_exeucte;
+/// use cw_gov_ownable::cw_ownable_exeucte;
 ///
 /// #[cw_ownable_execute]
 /// #[cw_serde]
@@ -65,7 +67,7 @@ fn merge_variants(metadata: TokenStream, left: TokenStream, right: TokenStream) 
 ///
 /// ```rust
 /// use cosmwasm_schema::cw_serde;
-/// use cw_ownable::Action;
+/// use cw_gov_ownable::Action;
 ///
 /// #[cw_serde]
 /// enum ExecuteMsg {
@@ -87,7 +89,7 @@ pub fn cw_ownable_execute(metadata: TokenStream, input: TokenStream) -> TokenStr
                 /// can be either to propose transferring ownership to an account,
                 /// accept a pending ownership transfer, or renounce the ownership
                 /// permanently.
-                UpdateOwnership(::cw_ownable::Action),
+                UpdateOwnership(::cw_gov_ownable::Action),
             }
         }
         .into(),
@@ -100,7 +102,7 @@ pub fn cw_ownable_execute(metadata: TokenStream, input: TokenStream) -> TokenStr
 ///
 /// ```rust
 /// use cosmwasm_schema::{cw_serde, QueryResponses};
-/// use cw_ownable::cw_ownable_query;
+/// use cw_gov_ownable::cw_ownable_query;
 ///
 /// #[cw_ownable_query]
 /// #[cw_serde]
@@ -117,7 +119,7 @@ pub fn cw_ownable_execute(metadata: TokenStream, input: TokenStream) -> TokenStr
 ///
 /// ```rust
 /// use cosmwasm_schema::cw_serde;
-/// use cw_ownable::Ownership;
+/// use cw_gov_ownable::Ownership;
 ///
 /// #[cw_serde]
 /// #[derive(QueryResponses)]
@@ -140,7 +142,7 @@ pub fn cw_ownable_query(metadata: TokenStream, input: TokenStream) -> TokenStrea
         quote! {
             enum Right {
                 /// Query the contract's ownership information
-                #[returns(::cw_ownable::Ownership<String>)]
+                #[returns(::cw_gov_ownable::Ownership<String>)]
                 Ownership {},
             }
         }

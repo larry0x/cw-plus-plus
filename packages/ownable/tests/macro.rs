@@ -1,5 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cw_ownable::{cw_ownable_execute, cw_ownable_query, Action};
+use cw_gov_ownable::{cw_ownable_execute, cw_ownable_query, Action};
 
 #[cw_ownable_execute]
 #[cw_serde]

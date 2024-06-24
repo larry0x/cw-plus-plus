@@ -2,6 +2,7 @@
 
 use std::fmt::Display;
 
+use abstract_std::{objects::gov_type::GovernanceDetails, AbstractError};
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Api, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
 use cw_address_like::AddressLike;
@@ -15,12 +16,11 @@ pub use cw_utils::Expiration;
 #[cw_serde]
 pub struct Ownership<T: AddressLike> {
     /// The contract's current owner.
-    /// `None` if the ownership has been renounced.
-    pub owner: Option<T>,
+    pub owner: GovernanceDetails<T>,
 
     /// The account who has been proposed to take over the ownership.
     /// `None` if there isn't a pending ownership transfer.
-    pub pending_owner: Option<T>,
+    pub pending_owner: Option<GovernanceDetails<T>>,
 
     /// The deadline for the pending owner to accept the ownership.
     /// `None` if there isn't a pending ownership transfer, or if a transfer
@@ -38,7 +38,7 @@ pub enum Action {
     ///
     /// Any existing pending ownership transfer is overwritten.
     TransferOwnership {
-        new_owner: String,
+        new_owner: GovernanceDetails<String>,
         expiry: Option<Expiration>,
     },
 
@@ -61,6 +61,9 @@ pub enum Action {
 pub enum OwnershipError {
     #[error("{0}")]
     Std(#[from] StdError),
+
+    #[error("{0}")]
+    Abstract(#[from] AbstractError),
 
     #[error("Contract ownership has been renounced")]
     NoOwner,
@@ -85,16 +88,16 @@ const OWNERSHIP: Item<Ownership<Addr>> = Item::new("ownership");
 ///
 /// This function is only intended to be used only during contract instantiation.
 pub fn initialize_owner(
-    storage: &mut dyn Storage,
-    api: &dyn Api,
-    owner: Option<&str>,
-) -> StdResult<Ownership<Addr>> {
+    deps: DepsMut,
+    owner: GovernanceDetails<String>,
+    version_control: Addr,
+) -> Result<Ownership<Addr>, OwnershipError> {
     let ownership = Ownership {
-        owner: owner.map(|h| api.addr_validate(h)).transpose()?,
+        owner: owner.verify(deps.as_ref(), version_control)?,
         pending_owner: None,
         pending_expiry: None,
     };
-    OWNERSHIP.save(storage, &ownership)?;
+    OWNERSHIP.save(deps.storage, &ownership)?;
     Ok(ownership)
 }
 
@@ -105,7 +108,7 @@ pub fn initialize_owner(
 pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
     let ownership = OWNERSHIP.load(store)?;
 
-    if let Some(owner) = ownership.owner {
+    if let Some(owner) = ownership.owner.owner_address() {
         if *addr == owner {
             return Ok(true);
         }
@@ -123,7 +126,7 @@ pub fn assert_owner(store: &dyn Storage, sender: &Addr) -> Result<(), OwnershipE
 /// Assert that an account is the contract's current owner.
 fn check_owner(ownership: &Ownership<Addr>, sender: &Addr) -> Result<(), OwnershipError> {
     // the contract must have an owner
-    let Some(current_owner) = &ownership.owner else {
+    let Some(current_owner) = &ownership.owner.owner_address() else {
         return Err(OwnershipError::NoOwner);
     };
 
@@ -141,13 +144,14 @@ pub fn update_ownership(
     deps: DepsMut,
     block: &BlockInfo,
     sender: &Addr,
+    version_control: Addr,
     action: Action,
 ) -> Result<Ownership<Addr>, OwnershipError> {
     match action {
         Action::TransferOwnership {
             new_owner,
             expiry,
-        } => transfer_ownership(deps, sender, &new_owner, expiry),
+        } => transfer_ownership(deps, sender, new_owner, version_control, expiry),
         Action::AcceptOwnership => accept_ownership(deps.storage, block, sender),
         Action::RenounceOwnership => renounce_ownership(deps.storage, sender),
     }
@@ -195,7 +199,7 @@ impl<T: AddressLike> Ownership<T> {
     /// ```
     pub fn into_attributes(self) -> Vec<Attribute> {
         vec![
-            Attribute::new("owner", none_or(self.owner.as_ref())),
+            Attribute::new("owner", self.owner.to_string()),
             Attribute::new("pending_owner", none_or(self.pending_owner.as_ref())),
             Attribute::new("pending_expiry", none_or(self.pending_expiry.as_ref())),
         ]
@@ -211,9 +215,11 @@ fn none_or<T: Display>(or: Option<&T>) -> String {
 fn transfer_ownership(
     deps: DepsMut,
     sender: &Addr,
-    new_owner: &str,
+    new_owner: GovernanceDetails<String>,
+    version_control: Addr,
     expiry: Option<Expiration>,
 ) -> Result<Ownership<Addr>, OwnershipError> {
+    let new_owner = new_owner.verify(deps.as_ref(), version_control)?;
     OWNERSHIP.update(deps.storage, |ownership| {
         // the contract must have an owner
         check_owner(&ownership, sender)?;
@@ -230,7 +236,7 @@ fn transfer_ownership(
         // To fix the erorr, the owner can simply invoke `transfer_ownership`
         // again with the correct expiry and overwrite the invalid one.
         Ok(Ownership {
-            pending_owner: Some(deps.api.addr_validate(new_owner)?),
+            pending_owner: Some(new_owner),
             pending_expiry: expiry,
             ..ownership
         })
@@ -245,24 +251,27 @@ fn accept_ownership(
 ) -> Result<Ownership<Addr>, OwnershipError> {
     OWNERSHIP.update(store, |ownership| {
         // there must be an existing ownership transfer
-        let Some(pending_owner) = &ownership.pending_owner else {
+        let Some(maybe_pending_owner) = ownership.pending_owner else {
             return Err(OwnershipError::TransferNotFound);
         };
 
-        // the sender must be the pending owner
-        if sender != pending_owner {
-            return Err(OwnershipError::NotPendingOwner);
+        // If new gov has an owner they must accept
+        if let Some(pending_owner) = maybe_pending_owner.owner_address() {
+            // the sender must be the pending owner
+            if sender != pending_owner {
+                return Err(OwnershipError::NotPendingOwner);
+            };
+
+            // if the transfer has a deadline, it must not have been reached
+            if let Some(expiry) = &ownership.pending_expiry {
+                if expiry.is_expired(block) {
+                    return Err(OwnershipError::TransferExpired);
+                }
+            }
         };
 
-        // if the transfer has a deadline, it must not have been reached
-        if let Some(expiry) = &ownership.pending_expiry {
-            if expiry.is_expired(block) {
-                return Err(OwnershipError::TransferExpired);
-            }
-        }
-
         Ok(Ownership {
-            owner: ownership.pending_owner,
+            owner: maybe_pending_owner,
             pending_owner: None,
             pending_expiry: None,
         })
@@ -278,7 +287,7 @@ fn renounce_ownership(
         check_owner(&ownership, sender)?;
 
         Ok(Ownership {
-            owner: None,
+            owner: GovernanceDetails::Renounced {},
             pending_owner: None,
             pending_expiry: None,
         })
@@ -296,11 +305,25 @@ mod tests {
     use super::*;
 
     fn mock_addresses() -> [Addr; 3] {
+        [Addr::unchecked("larry"), Addr::unchecked("jake"), Addr::unchecked("pumpkin")]
+    }
+
+    fn mock_govs() -> [GovernanceDetails<Addr>; 3] {
         [
-            Addr::unchecked("larry"),
-            Addr::unchecked("jake"),
-            Addr::unchecked("pumpkin"),
+            GovernanceDetails::Monarchy {
+                monarch: Addr::unchecked("larry"),
+            },
+            GovernanceDetails::Monarchy {
+                monarch: Addr::unchecked("jake"),
+            },
+            GovernanceDetails::Monarchy {
+                monarch: Addr::unchecked("pumpkin"),
+            },
         ]
+    }
+
+    fn vc_addr() -> Addr {
+        Addr::unchecked("version_control")
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
@@ -314,10 +337,9 @@ mod tests {
     #[test]
     fn initializing_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, _, _] = mock_addresses();
+        let [larry, _, _] = mock_govs();
 
-        let ownership =
-            initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
+        let ownership = initialize_owner(deps.as_mut(), larry.clone().into(), vc_addr()).unwrap();
 
         // ownership returned is same as ownership stored.
         assert_eq!(ownership, OWNERSHIP.load(deps.as_ref().storage).unwrap());
@@ -325,7 +347,7 @@ mod tests {
         assert_eq!(
             ownership,
             Ownership {
-                owner: Some(larry),
+                owner: larry,
                 pending_owner: None,
                 pending_expiry: None,
             },
@@ -335,11 +357,12 @@ mod tests {
     #[test]
     fn initialize_ownership_no_owner() {
         let mut deps = mock_dependencies();
-        let ownership = initialize_owner(&mut deps.storage, &deps.api, None).unwrap();
+        let ownership =
+            initialize_owner(deps.as_mut(), GovernanceDetails::Renounced {}, vc_addr()).unwrap();
         assert_eq!(
             ownership,
             Ownership {
-                owner: None,
+                owner: GovernanceDetails::Renounced {},
                 pending_owner: None,
                 pending_expiry: None,
             },
@@ -349,24 +372,24 @@ mod tests {
     #[test]
     fn asserting_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, _] = mock_addresses();
+        let [larry, jake, _] = mock_govs();
 
         // case 1. owner has not renounced
         {
-            initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
+            initialize_owner(deps.as_mut(), larry.clone().into(), vc_addr()).unwrap();
 
-            let res = assert_owner(deps.as_ref().storage, &larry);
+            let res = assert_owner(deps.as_ref().storage, &larry.owner_address().unwrap());
             assert!(res.is_ok());
 
-            let res = assert_owner(deps.as_ref().storage, &jake);
+            let res = assert_owner(deps.as_ref().storage, &jake.owner_address().unwrap());
             assert_eq!(res.unwrap_err(), OwnershipError::NotOwner);
         }
 
         // case 2. owner has renounced
         {
-            renounce_ownership(deps.as_mut().storage, &larry).unwrap();
+            renounce_ownership(deps.as_mut().storage, &larry.owner_address().unwrap()).unwrap();
 
-            let res = assert_owner(deps.as_ref().storage, &larry);
+            let res = assert_owner(deps.as_ref().storage, &larry.owner_address().unwrap());
             assert_eq!(res.unwrap_err(), OwnershipError::NoOwner);
         }
     }
@@ -374,18 +397,19 @@ mod tests {
     #[test]
     fn transferring_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, pumpkin] = mock_addresses();
+        let [larry, jake, pumpkin] = mock_govs();
 
-        initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
+        initialize_owner(deps.as_mut(), larry.clone().into(), vc_addr()).unwrap();
 
         // non-owner cannot transfer ownership
         {
             let err = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &jake,
+                &jake.owner_address().unwrap(),
+                vc_addr(),
                 Action::TransferOwnership {
-                    new_owner: pumpkin.to_string(),
+                    new_owner: pumpkin.clone().into(),
                     expiry: None,
                 },
             )
@@ -398,9 +422,10 @@ mod tests {
             let ownership = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &larry,
+                &larry.owner_address().unwrap(),
+                vc_addr(),
                 Action::TransferOwnership {
-                    new_owner: pumpkin.to_string(),
+                    new_owner: pumpkin.clone().into(),
                     expiry: Some(Expiration::AtHeight(42069)),
                 },
             )
@@ -408,7 +433,7 @@ mod tests {
             assert_eq!(
                 ownership,
                 Ownership {
-                    owner: Some(larry),
+                    owner: larry,
                     pending_owner: Some(pumpkin),
                     pending_expiry: Some(Expiration::AtHeight(42069)),
                 },
@@ -422,16 +447,17 @@ mod tests {
     #[test]
     fn accepting_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, pumpkin] = mock_addresses();
+        let [larry, jake, pumpkin] = mock_govs();
 
-        initialize_owner(&mut deps.storage, &deps.api, Some(larry.as_str())).unwrap();
+        initialize_owner(deps.as_mut(), larry.clone().into(), vc_addr()).unwrap();
 
         // cannot accept ownership when there isn't a pending ownership transfer
         {
             let err = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &pumpkin,
+                &pumpkin.owner_address().unwrap(),
+                vc_addr(),
                 Action::AcceptOwnership,
             )
             .unwrap_err();
@@ -440,8 +466,9 @@ mod tests {
 
         transfer_ownership(
             deps.as_mut(),
-            &larry,
-            pumpkin.as_str(),
+            &larry.owner_address().unwrap(),
+            pumpkin.clone().into(),
+            vc_addr(),
             Some(Expiration::AtHeight(42069)),
         )
         .unwrap();
@@ -451,7 +478,8 @@ mod tests {
             let err = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &jake,
+                &jake.owner_address().unwrap(),
+                vc_addr(),
                 Action::AcceptOwnership,
             )
             .unwrap_err();
@@ -463,7 +491,8 @@ mod tests {
             let err = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(69420),
-                &pumpkin,
+                &pumpkin.owner_address().unwrap(),
+                vc_addr(),
                 Action::AcceptOwnership,
             )
             .unwrap_err();
@@ -475,14 +504,15 @@ mod tests {
             let ownership = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(10000),
-                &pumpkin,
+                &pumpkin.owner_address().unwrap(),
+                vc_addr(),
                 Action::AcceptOwnership,
             )
             .unwrap();
             assert_eq!(
                 ownership,
                 Ownership {
-                    owner: Some(pumpkin),
+                    owner: pumpkin,
                     pending_owner: None,
                     pending_expiry: None,
                 },
@@ -496,10 +526,10 @@ mod tests {
     #[test]
     fn renouncing_ownership() {
         let mut deps = mock_dependencies();
-        let [larry, jake, pumpkin] = mock_addresses();
+        let [larry, jake, pumpkin] = mock_govs();
 
         let ownership = Ownership {
-            owner: Some(larry.clone()),
+            owner: larry.clone(),
             pending_owner: Some(pumpkin),
             pending_expiry: None,
         };
@@ -510,7 +540,8 @@ mod tests {
             let err = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &jake,
+                &jake.owner_address().unwrap(),
+                vc_addr(),
                 Action::RenounceOwnership,
             )
             .unwrap_err();
@@ -522,7 +553,8 @@ mod tests {
             let ownership = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &larry,
+                &larry.owner_address().unwrap(),
+                vc_addr(),
                 Action::RenounceOwnership,
             )
             .unwrap();
@@ -533,7 +565,7 @@ mod tests {
             assert_eq!(
                 ownership,
                 Ownership {
-                    owner: None,
+                    owner: GovernanceDetails::Renounced {},
                     pending_owner: None,
                     pending_expiry: None,
                 },
@@ -545,7 +577,8 @@ mod tests {
             let err = update_ownership(
                 deps.as_mut(),
                 &mock_block_at_height(12345),
-                &larry,
+                &larry.owner_address().unwrap(),
+                vc_addr(),
                 Action::RenounceOwnership,
             )
             .unwrap_err();
@@ -558,13 +591,15 @@ mod tests {
         use cw_utils::Expiration;
         assert_eq!(
             Ownership {
-                owner: Some("blue".to_string()),
+                owner: GovernanceDetails::Monarchy {
+                    monarch: "batman".to_string()
+                },
                 pending_owner: None,
                 pending_expiry: Some(Expiration::Never {})
             }
             .into_attributes(),
             vec![
-                Attribute::new("owner", "blue"),
+                Attribute::new("owner", "renounced"),
                 Attribute::new("pending_owner", "none"),
                 Attribute::new("pending_expiry", "expiration: never")
             ],

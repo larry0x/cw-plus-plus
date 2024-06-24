@@ -1,5 +1,5 @@
 [package]
-name        = "cw-ownable"
+name        = "cw-gov-ownable"
 version     = "0.5.1"
 description = "Utility for controlling ownership of CosmWasm smart contracts"
 authors     = { workspace = true }
@@ -20,3 +20,4 @@ cw-ownable-derive = { workspace = true }
 cw-storage-plus   = { workspace = true }
 cw-utils          = { workspace = true }
 thiserror         = { workspace = true }
+abstract-std = "0.22"
