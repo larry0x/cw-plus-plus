@@ -1,21 +1,18 @@
 [package]
-name        = "cw-paginate"
-version     = "0.2.1"
+name = "cw-paginate"
+version = "0.2.1"
 description = "Helper function for iterating CosmWasm storage maps with pagination"
-authors     = [
-  "Larry Engineer <gm@larry.engineer>",
-  "ekez <ekez@withoutdoing.com>",
-]
-edition     = { workspace = true }
-homepage    = { workspace = true }
-repository  = { workspace = true }
-license     = { workspace = true }
-keywords    = { workspace = true }
+authors = ["Larry Engineer <gm@larry.engineer>", "ekez <ekez@withoutdoing.com>"]
+edition = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+keywords = { workspace = true }
 
 [lib]
 doctest = false # disable doc tests
 
 [dependencies]
-cosmwasm-std    = { workspace = true }
+cosmwasm-std = { workspace = true }
 cw-storage-plus = { workspace = true }
-serde           = { workspace = true }
+serde = { workspace = true }

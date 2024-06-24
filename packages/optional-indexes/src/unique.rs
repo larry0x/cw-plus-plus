@@ -39,20 +39,14 @@ where
     T: Serialize + DeserializeOwned + Clone,
 {
     pub fn load(&self, store: &dyn Storage, key: IK) -> StdResult<(PK::Output, T)> {
-        let UniqueRef {
-            pk,
-            value
-        } = self.idx_map.load(store, key)?;
+        let UniqueRef { pk, value } = self.idx_map.load(store, key)?;
         let key = PK::from_slice(&pk)?;
         Ok((key, value))
     }
 
     pub fn may_load(&self, store: &dyn Storage, key: IK) -> StdResult<Option<(PK::Output, T)>> {
         match self.idx_map.may_load(store, key)? {
-            Some(UniqueRef {
-                pk,
-                value,
-            }) => {
+            Some(UniqueRef { pk, value }) => {
                 let key = PK::from_slice(&pk)?;
                 Ok(Some((key, value)))
             },
@@ -70,14 +64,11 @@ where
     where
         T: 'c,
     {
-        let iter = self
-            .idx_map
-            .range_raw(store, min, max, order)
-            .map(|res| {
-                let (_, item) = res?;
-                let key = PK::from_slice(&item.pk)?;
-                Ok((key, item.value))
-            });
+        let iter = self.idx_map.range_raw(store, min, max, order).map(|res| {
+            let (_, item) = res?;
+            let key = PK::from_slice(&item.pk)?;
+            Ok((key, item.value))
+        });
         Box::new(iter)
     }
 }

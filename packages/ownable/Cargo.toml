@@ -1,23 +1,23 @@
 [package]
-name        = "cw-gov-ownable"
-version     = "0.5.1"
+name = "cw-gov-ownable"
+version = "0.5.1"
 description = "Utility for controlling ownership of CosmWasm smart contracts"
-authors     = { workspace = true }
-edition     = { workspace = true }
-homepage    = { workspace = true }
-repository  = { workspace = true }
-license     = { workspace = true }
-keywords    = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+keywords = { workspace = true }
 
 [lib]
 doctest = false # disable doc tests
 
 [dependencies]
-cosmwasm-schema   = { workspace = true }
-cosmwasm-std      = { workspace = true }
-cw-address-like   = { workspace = true }
+cosmwasm-schema = { workspace = true }
+cosmwasm-std = { workspace = true }
+cw-address-like = { workspace = true }
 cw-ownable-derive = { workspace = true }
-cw-storage-plus   = { workspace = true }
-cw-utils          = { workspace = true }
-thiserror         = { workspace = true }
+cw-storage-plus = { workspace = true }
+cw-utils = { workspace = true }
+thiserror = { workspace = true }
 abstract-std = "0.22"

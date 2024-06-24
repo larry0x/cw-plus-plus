@@ -63,9 +63,9 @@ impl<'a, T> Set<'a, T> {
     /// Reduce the item count by 1; throw error if the current count is zero.
     fn reduce_count(&self, store: &mut dyn Storage) -> StdResult<()> {
         match self.counter.may_load(store)? {
-            None | Some(0) => {
-                Err(StdError::generic_err("[cw-item-set]: count cannot be reduced below zero"))
-            },
+            None | Some(0) => Err(StdError::generic_err(
+                "[cw-item-set]: count cannot be reduced below zero",
+            )),
             Some(mut count) => {
                 count -= 1;
                 self.counter.save(store, &count)
@@ -83,7 +83,10 @@ where
     /// This is copied from
     /// https://github.com/CosmWasm/cw-plus/blob/v0.14.0/packages/storage-plus/src/map.rs#L47-L52
     fn key(&self, item: T) -> Path<Empty> {
-        Path::new(self.namespace, &item.key().iter().map(Key::as_ref).collect::<Vec<_>>())
+        Path::new(
+            self.namespace,
+            &item.key().iter().map(Key::as_ref).collect::<Vec<_>>(),
+        )
     }
 
     /// Returns `true` if the set contains an item
@@ -222,7 +225,9 @@ mod tests {
     /// Return a list of mockup names for use in testing.
     #[cfg(feature = "iterator")]
     fn mock_names(indexes: Range<usize>) -> Vec<String> {
-        let mut names = indexes.map(|i| format!("test-name-{i}")).collect::<Vec<_>>();
+        let mut names = indexes
+            .map(|i| format!("test-name-{i}"))
+            .collect::<Vec<_>>();
         names.sort();
         names
     }

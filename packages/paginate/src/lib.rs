@@ -67,7 +67,9 @@ where
     F: Fn(<K::Suffix as KeyDeserialize>::Output, T) -> Result<R, E>,
     E: From<StdError>,
 {
-    let iter = map.prefix(prefix).range(store, start, None, Order::Ascending);
+    let iter = map
+        .prefix(prefix)
+        .range(store, start, None, Order::Ascending);
     collect(iter, limit, parse_fn)
 }
 

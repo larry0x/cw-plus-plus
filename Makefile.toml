@@ -19,12 +19,7 @@ args = ["clippy", "--tests", "--", "-D", "warnings"]
 
 [tasks.build]
 command = "cargo"
-args = [
-  "build",
-  "--release",
-  "--locked",
-  "--target", "wasm32-unknown-unknown",
-]
+args = ["build", "--release", "--locked", "--target", "wasm32-unknown-unknown"]
 
 [tasks.udeps]
 toolchain = "nightly"

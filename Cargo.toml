@@ -2,22 +2,22 @@
 members = ["packages/*"]
 
 [workspace.package]
-authors    = ["larry <gm@larry.engineer>"]
-edition    = "2021"
-homepage   = "https://larry.engineer"
+authors = ["larry <gm@larry.engineer>"]
+edition = "2021"
+homepage = "https://larry.engineer"
 repository = "https://github.com/larry0x/cw-plus-plus"
-license    = "Apache-2.0"
-keywords   = ["cosmos", "cosmwasm"]
+license = "Apache-2.0"
+keywords = ["cosmos", "cosmwasm"]
 
 [workspace.dependencies]
-cosmwasm-schema   = "1.2"
-cosmwasm-std      = "1.2"
-cw-address-like   = { version = "1.0.4", path = "./packages/address-like" }
+cosmwasm-schema = "1.2"
+cosmwasm-std = "1.2"
+cw-address-like = { version = "1.0.4" }
 cw-ownable-derive = { version = "0.5.1", path = "./packages/ownable/derive" }
-cw-storage-plus   = "1.1"
-cw-utils          = "1.0"
-proc-macro2       = "1"
-quote             = "1"
-serde             = { version = "1", default-features = false }
-syn               = "1"
-thiserror         = "1"
+cw-storage-plus = "1.1"
+cw-utils = "1.0"
+proc-macro2 = "1"
+quote = "1"
+serde = { version = "1", default-features = false }
+syn = "1"
+thiserror = "1"

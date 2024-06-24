@@ -1,22 +1,22 @@
 [package]
-name        = "cw-item-set"
-version     = "0.7.1"
+name = "cw-item-set"
+version = "0.7.1"
 description = "Set of non-duplicate items for smart contract store"
-authors     = { workspace = true }
-edition     = { workspace = true }
-homepage    = { workspace = true }
-repository  = { workspace = true }
-license     = { workspace = true }
-keywords    = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+repository = { workspace = true }
+license = { workspace = true }
+keywords = { workspace = true }
 
 [lib]
 doctest = false # disable doc tests
 
 [features]
-default  = ["counter", "iterator"]
-counter  = []
+default = ["counter", "iterator"]
+counter = []
 iterator = ["cw-storage-plus/iterator"]
 
 [dependencies]
-cosmwasm-std    = { workspace = true }
+cosmwasm-std = { workspace = true }
 cw-storage-plus = { workspace = true }
