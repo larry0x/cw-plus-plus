@@ -4,10 +4,10 @@ use std::fmt::Display;
 
 use abstract_std::{objects::gov_type::GovernanceDetails, AbstractError};
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Api, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
+use cosmwasm_std::{Addr, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
 use cw_address_like::AddressLike;
 // re-export the proc macros and the Expiration class
-pub use cw_ownable_derive::{cw_ownable_execute, cw_ownable_query};
+pub use cw_gov_ownable_derive::{cw_ownable_execute, cw_ownable_query};
 use cw_storage_plus::Item;
 pub use cw_utils::Expiration;
 
@@ -149,7 +149,7 @@ pub fn update_ownership(
     match action {
         Action::TransferOwnership { new_owner, expiry } => {
             transfer_ownership(deps, sender, new_owner, version_control, expiry)
-        },
+        }
         Action::AcceptOwnership => accept_ownership(deps.storage, block, sender),
         Action::RenounceOwnership => renounce_ownership(deps.storage, sender),
     }
@@ -301,14 +301,6 @@ mod tests {
     use cosmwasm_std::{testing::mock_dependencies, Timestamp};
 
     use super::*;
-
-    fn mock_addresses() -> [Addr; 3] {
-        [
-            Addr::unchecked("larry"),
-            Addr::unchecked("jake"),
-            Addr::unchecked("pumpkin"),
-        ]
-    }
 
     fn mock_govs() -> [GovernanceDetails<Addr>; 3] {
         [

@@ -69,7 +69,7 @@ impl<'a, T> Set<'a, T> {
             Some(mut count) => {
                 count -= 1;
                 self.counter.save(store, &count)
-            },
+            }
         }
     }
 }

@@ -49,7 +49,7 @@ where
             Some(UniqueRef { pk, value }) => {
                 let key = PK::from_slice(&pk)?;
                 Ok(Some((key, value)))
-            },
+            }
             None => Ok(None),
         }
     }
