@@ -20,4 +20,4 @@ cw-gov-ownable-derive = { workspace = true }
 cw-storage-plus = { workspace = true }
 cw-utils = { workspace = true }
 thiserror = { workspace = true }
-abstract-std = "0.22"
+abstract-std = {version = "0.23.0-beta.0", git = "https://github.com/AbstractSDK/abstract", branch = "nft-gov-refactor"}

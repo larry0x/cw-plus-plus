@@ -4,7 +4,7 @@ use std::fmt::Display;
 
 use abstract_std::{objects::gov_type::GovernanceDetails, AbstractError};
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
+use cosmwasm_std::{Addr, Attribute, BlockInfo, DepsMut, QuerierWrapper, StdError, StdResult, Storage};
 use cw_address_like::AddressLike;
 // re-export the proc macros and the Expiration class
 pub use cw_gov_ownable_derive::{cw_ownable_execute, cw_ownable_query};
@@ -78,6 +78,9 @@ pub enum OwnershipError {
 
     #[error("A pending ownership transfer exists but it has expired")]
     TransferExpired,
+
+    #[error("Cannot transfer ownership to renounced structure. use action::renounce")]
+    TransferToRenounced,
 }
 
 /// Storage constant for the contract's ownership
@@ -104,10 +107,10 @@ pub fn initialize_owner(
 /// Return Ok(false) if the contract doesn't have an owner, of if it does but
 /// it's not the given address.
 /// Return Err if fails to load ownership info from storage.
-pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
+pub fn is_owner(store: &dyn Storage, querier: &QuerierWrapper, addr: &Addr) -> StdResult<bool> {
     let ownership = OWNERSHIP.load(store)?;
 
-    if let Some(owner) = ownership.owner.owner_address() {
+    if let Some(owner) = ownership.owner.owner_address(querier) {
         if *addr == owner {
             return Ok(true);
         }
@@ -117,15 +120,15 @@ pub fn is_owner(store: &dyn Storage, addr: &Addr) -> StdResult<bool> {
 }
 
 /// Assert that an account is the contract's current owner.
-pub fn assert_owner(store: &dyn Storage, sender: &Addr) -> Result<(), OwnershipError> {
+pub fn assert_owner(store: &dyn Storage,querier: &QuerierWrapper, sender: &Addr) -> Result<(), OwnershipError> {
     let ownership = OWNERSHIP.load(store)?;
-    check_owner(&ownership, sender)
+    check_owner(querier, &ownership, sender)
 }
 
 /// Assert that an account is the contract's current owner.
-fn check_owner(ownership: &Ownership<Addr>, sender: &Addr) -> Result<(), OwnershipError> {
+fn check_owner(querier: &QuerierWrapper, ownership: &Ownership<Addr>, sender: &Addr) -> Result<(), OwnershipError> {
     // the contract must have an owner
-    let Some(current_owner) = &ownership.owner.owner_address() else {
+    let Some(current_owner) = &ownership.owner.owner_address(querier) else {
         return Err(OwnershipError::NoOwner);
     };
 
@@ -150,7 +153,7 @@ pub fn update_ownership(
         Action::TransferOwnership { new_owner, expiry } => {
             transfer_ownership(deps, sender, new_owner, version_control, expiry)
         }
-        Action::AcceptOwnership => accept_ownership(deps.storage, block, sender),
+        Action::AcceptOwnership => accept_ownership(deps.storage, &deps.querier, block, sender),
         Action::RenounceOwnership => renounce_ownership(deps.storage, sender),
     }
 }
@@ -218,9 +221,14 @@ fn transfer_ownership(
     expiry: Option<Expiration>,
 ) -> Result<Ownership<Addr>, OwnershipError> {
     let new_owner = new_owner.verify(deps.as_ref(), version_control)?;
+
+    if let GovernanceDetails::Renounced {} = new_owner {
+        return Err(OwnershipError::TransferToRenounced {});
+    }
+
     OWNERSHIP.update(deps.storage, |ownership| {
         // the contract must have an owner
-        check_owner(&ownership, sender)?;
+        check_owner(&deps.querier, &ownership, sender)?;
 
         // NOTE: We don't validate the expiry, i.e. asserting it is later than
         // the current block time.
@@ -233,6 +241,16 @@ fn transfer_ownership(
         //
         // To fix the erorr, the owner can simply invoke `transfer_ownership`
         // again with the correct expiry and overwrite the invalid one.
+
+        // if NFT, no way for NFT contract to accept so just confirm
+        if let GovernanceDetails::NFT { .. } = new_owner {
+            return Ok(Ownership {
+                owner: new_owner,
+                pending_owner: None,
+                pending_expiry: None,
+            });
+        }
+
         Ok(Ownership {
             pending_owner: Some(new_owner),
             pending_expiry: expiry,
@@ -244,6 +262,7 @@ fn transfer_ownership(
 /// Accept a pending ownership transfer.
 fn accept_ownership(
     store: &mut dyn Storage,
+    querier: &QuerierWrapper,
     block: &BlockInfo,
     sender: &Addr,
 ) -> Result<Ownership<Addr>, OwnershipError> {
@@ -254,7 +273,7 @@ fn accept_ownership(
         };
 
         // If new gov has an owner they must accept
-        if let Some(pending_owner) = maybe_pending_owner.owner_address() {
+        if let Some(pending_owner) = maybe_pending_owner.owner_address(querier) {
             // the sender must be the pending owner
             if sender != pending_owner {
                 return Err(OwnershipError::NotPendingOwner);
@@ -279,10 +298,11 @@ fn accept_ownership(
 /// Set the contract's ownership as vacant permanently.
 fn renounce_ownership(
     store: &mut dyn Storage,
+    querier: &QuerierWrapper,
     sender: &Addr,
 ) -> Result<Ownership<Addr>, OwnershipError> {
     OWNERSHIP.update(store, |ownership| {
-        check_owner(&ownership, sender)?;
+        check_owner(querier, &ownership, sender)?;
 
         Ok(Ownership {
             owner: GovernanceDetails::Renounced {},
