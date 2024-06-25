@@ -41,9 +41,8 @@ dependencies = [
 
 [[package]]
 name = "abstract-std"
-version = "0.22.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02d871df3db2ef86eb0edd24db0e8a8680794b36abad38a96eda365caba3d283"
+version = "0.23.0-beta.0"
+source = "git+https://github.com/AbstractSDK/abstract?branch=nft-gov-refactor#8d33129c9e8d7bc9ac8255833cef2e9df9d754b5"
 dependencies = [
  "abstract-polytone",
  "cosmwasm-schema",
@@ -59,6 +58,7 @@ dependencies = [
  "cw-utils",
  "cw2",
  "cw20",
+ "cw721",
  "function_name",
  "schemars",
  "semver",
@@ -407,9 +407,9 @@ dependencies = [
 
 [[package]]
 name = "cw-orch"
-version = "0.22.2"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc1ddc937c28c59ccf2765fa05ddc0437644d3b283408a7cc64f7b371b0b9309"
+checksum = "97c76d9dd1c2632359f964e3531e5d0833d9022ae9fb216ce9aaaf36070d8bdf"
 dependencies = [
  "anyhow",
  "cosmwasm-std",
@@ -459,9 +459,9 @@ dependencies = [
 
 [[package]]
 name = "cw-orch-fns-derive"
-version = "0.19.1"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9acb7a15bfacc52abdf312a9fffb139883c1effb6ea7e645cd39580a8527463"
+checksum = "67bd0a41e97819cee77efeeee0aa82bc0b029a9cb7a5a4b47de0c87f1bf69802"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -610,6 +610,19 @@ dependencies = [
  "semver",
  "serde",
  "thiserror",
+]
+
+[[package]]
+name = "cw721"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3c4d286625ccadc957fe480dd3bdc54ada19e0e6b5b9325379db3130569e914"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-utils",
+ "schemars",
+ "serde",
 ]
 
 [[package]]
