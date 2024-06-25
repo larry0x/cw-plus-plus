@@ -154,7 +154,7 @@ pub fn update_ownership(
             transfer_ownership(deps, sender, new_owner, version_control, expiry)
         }
         Action::AcceptOwnership => accept_ownership(deps.storage, &deps.querier, block, sender),
-        Action::RenounceOwnership => renounce_ownership(deps.storage, sender),
+        Action::RenounceOwnership => renounce_ownership(deps.storage, &deps.querier, sender),
     }
 }
 
