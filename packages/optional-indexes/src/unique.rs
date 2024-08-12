@@ -22,7 +22,7 @@ pub struct OptionalUniqueIndex<IK, T, PK = ()> {
     phantom: PhantomData<PK>,
 }
 
-impl<'a, IK, T, PK> OptionalUniqueIndex<IK, T, PK> {
+impl<IK, T, PK> OptionalUniqueIndex<IK, T, PK> {
     pub const fn new(idx_fn: fn(&T) -> Option<IK>, idx_namespace: &'static str) -> Self {
         Self {
             index: idx_fn,

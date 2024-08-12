@@ -28,12 +28,12 @@ pub struct Ownership<T: AddressLike> {
     pub pending_expiry: Option<Expiration>,
 }
 
-pub struct OwnershipStore<'a> {
-    pub item: Item<'a, Ownership<Addr>>,
+pub struct OwnershipStore {
+    pub item: Item<Ownership<Addr>>,
 }
 
-impl<'a> OwnershipStore<'a> {
-    pub const fn new(key: &'a str) -> Self {
+impl OwnershipStore {
+    pub const fn new(key: &'static str) -> Self {
         Self {
             item: Item::new(key),
         }
