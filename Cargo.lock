@@ -193,14 +193,14 @@ dependencies = [
 
 [[package]]
 name = "cw-address-like"
-version = "2.0.4"
+version = "2.0.0"
 dependencies = [
  "cosmwasm-std",
 ]
 
 [[package]]
 name = "cw-item-set"
-version = "0.8.0"
+version = "2.0.0"
 dependencies = [
  "cosmwasm-std",
  "cw-storage-plus",
@@ -208,7 +208,7 @@ dependencies = [
 
 [[package]]
 name = "cw-optional-indexes"
-version = "0.2.0"
+version = "2.0.0"
 dependencies = [
  "cosmwasm-std",
  "cw-storage-plus",
@@ -217,7 +217,7 @@ dependencies = [
 
 [[package]]
 name = "cw-ownable"
-version = "0.6.0"
+version = "2.0.0"
 dependencies = [
  "cosmwasm-schema",
  "cosmwasm-std",
@@ -239,7 +239,7 @@ dependencies = [
 
 [[package]]
 name = "cw-paginate"
-version = "0.3.0"
+version = "2.0.0"
 dependencies = [
  "cosmwasm-std",
  "cw-storage-plus",

@@ -1,6 +1,6 @@
 [package]
 name        = "cw-paginate"
-version     = "0.3.0"
+version     = { workspace = true }
 description = "Helper function for iterating CosmWasm storage maps with pagination"
 authors     = [
   "Larry Engineer <gm@larry.engineer>",
