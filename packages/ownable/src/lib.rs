@@ -257,7 +257,7 @@ pub enum OwnershipError {
 }
 
 /// Storage constant for the contract's ownership
-const OWNERSHIP_KEY: &str = "ownership";
+pub const OWNERSHIP_KEY: &str = "ownership";
 const OWNERSHIP: OwnershipStore = OwnershipStore::new(OWNERSHIP_KEY);
 
 /// Set the given address as the contract owner.
