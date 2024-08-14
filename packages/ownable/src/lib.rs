@@ -344,7 +344,6 @@ impl<T: AddressLike> Ownership<T> {
     }
 }
 
-// This is a nice helper, maybe move to dedicated utils package?
 fn none_or<T: Display>(or: Option<&T>) -> String {
     or.map_or_else(|| "none".to_string(), |or| or.to_string())
 }
