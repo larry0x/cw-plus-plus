@@ -1,6 +1,6 @@
 [package]
 name        = "cw-ownable"
-version     = { workspace = true }
+version    = "2.1.0"
 description = "Utility for controlling ownership of CosmWasm smart contracts"
 authors     = { workspace = true }
 edition     = { workspace = true }
