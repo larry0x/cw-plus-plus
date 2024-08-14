@@ -123,12 +123,12 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
 }
 ```
 
-You can use ownership for other purposes:
+You can create new ownerships for other purposes:
 
 ```rust
 use cw_ownable::OwnershipStore;
 
-pub const CREATOR: OwnershipStore = OwnershipStore::new("creator");
+const CREATOR: OwnershipStore = OwnershipStore::new("creator");
 ```
 
 `CREATOR` has all functions in place: `initialize_owner`, `is_owner`, `assert_owner`, and `get_ownership`.
