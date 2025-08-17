@@ -64,7 +64,7 @@ impl<'a, T> Set<'a, T> {
     fn reduce_count(&self, store: &mut dyn Storage) -> StdResult<()> {
         match self.counter.may_load(store)? {
             None | Some(0) => {
-                Err(StdError::generic_err("[cw-item-set]: count cannot be reduced below zero"))
+                Err(StdError::msg("[cw-item-set]: count cannot be reduced below zero"))
             },
             Some(mut count) => {
                 count -= 1;

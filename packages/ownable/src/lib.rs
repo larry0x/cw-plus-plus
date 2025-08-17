@@ -5,10 +5,9 @@ use std::fmt::Display;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Api, Attribute, BlockInfo, DepsMut, StdError, StdResult, Storage};
 use cw_address_like::AddressLike;
-use cw_storage_plus::Item;
-
 // re-export the proc macros and the Expiration class
 pub use cw_ownable_derive::{cw_ownable_execute, cw_ownable_query};
+use cw_storage_plus::Item;
 pub use cw_utils::Expiration;
 
 /// The contract's ownership info
@@ -235,7 +234,7 @@ pub enum Action {
 }
 
 /// Errors associated with the contract's ownership
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug)]
 pub enum OwnershipError {
     #[error("{0}")]
     Std(#[from] StdError),
@@ -354,16 +353,15 @@ fn none_or<T: Display>(or: Option<&T>) -> String {
 
 #[cfg(test)]
 mod tests {
-    use cosmwasm_std::{testing::{mock_dependencies, MockApi}, Timestamp};
+    use cosmwasm_std::{
+        testing::{mock_dependencies, MockApi},
+        Timestamp,
+    };
 
     use super::*;
 
     fn mock_addresses(api: &MockApi) -> [Addr; 3] {
-        [
-            api.addr_make("larry"),
-            api.addr_make("jake"),
-            api.addr_make("pumpkin"),
-        ]
+        [api.addr_make("larry"), api.addr_make("jake"), api.addr_make("pumpkin")]
     }
 
     fn mock_block_at_height(height: u64) -> BlockInfo {
@@ -422,7 +420,7 @@ mod tests {
             assert!(res.is_ok());
 
             let res = OWNERSHIP.assert_owner(deps.as_ref().storage, &jake);
-            assert_eq!(res.unwrap_err(), OwnershipError::NotOwner);
+            assert_eq!(res.unwrap_err().to_string(), OwnershipError::NotOwner.to_string());
         }
 
         // case 2. owner has renounced
@@ -430,7 +428,7 @@ mod tests {
             OWNERSHIP.renounce_ownership(deps.as_mut().storage, &larry).unwrap();
 
             let res = OWNERSHIP.assert_owner(deps.as_ref().storage, &larry);
-            assert_eq!(res.unwrap_err(), OwnershipError::NoOwner);
+            assert_eq!(res.unwrap_err().to_string(), OwnershipError::NoOwner.to_string());
         }
     }
 
@@ -454,7 +452,7 @@ mod tests {
                     },
                 )
                 .unwrap_err();
-            assert_eq!(err, OwnershipError::NotOwner);
+            assert_eq!(err.to_string(), OwnershipError::NotOwner.to_string());
         }
 
         // owner properly transfers ownership
@@ -503,7 +501,7 @@ mod tests {
                     Action::AcceptOwnership,
                 )
                 .unwrap_err();
-            assert_eq!(err, OwnershipError::TransferNotFound);
+            assert_eq!(err.to_string(), OwnershipError::TransferNotFound.to_string());
         }
 
         OWNERSHIP
@@ -526,7 +524,7 @@ mod tests {
                     Action::AcceptOwnership,
                 )
                 .unwrap_err();
-            assert_eq!(err, OwnershipError::NotPendingOwner);
+            assert_eq!(err.to_string(), OwnershipError::NotPendingOwner.to_string());
         }
 
         // cannot accept ownership if deadline has passed
@@ -539,7 +537,7 @@ mod tests {
                     Action::AcceptOwnership,
                 )
                 .unwrap_err();
-            assert_eq!(err, OwnershipError::TransferExpired);
+            assert_eq!(err.to_string(), OwnershipError::TransferExpired.to_string());
         }
 
         // pending owner properly accepts ownership before deadline
@@ -588,7 +586,7 @@ mod tests {
                     Action::RenounceOwnership,
                 )
                 .unwrap_err();
-            assert_eq!(err, OwnershipError::NotOwner);
+            assert_eq!(err.to_string(), OwnershipError::NotOwner.to_string());
         }
 
         // owner properly renounces
@@ -625,7 +623,7 @@ mod tests {
                     Action::RenounceOwnership,
                 )
                 .unwrap_err();
-            assert_eq!(err, OwnershipError::NoOwner);
+            assert_eq!(err.to_string(), OwnershipError::NoOwner.to_string());
         }
     }
 

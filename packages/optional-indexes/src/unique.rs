@@ -70,14 +70,11 @@ where
     where
         T: 'c,
     {
-        let iter = self
-            .idx_map
-            .range_raw(store, min, max, order)
-            .map(|res| {
-                let (_, item) = res?;
-                let key = PK::from_slice(&item.pk)?;
-                Ok((key, item.value))
-            });
+        let iter = self.idx_map.range_raw(store, min, max, order).map(|res| {
+            let (_, item) = res?;
+            let key = PK::from_slice(&item.pk)?;
+            Ok((key, item.value))
+        });
         Box::new(iter)
     }
 }
@@ -94,7 +91,7 @@ where
                 if opt.is_some() {
                     // TODO: return a more informative error message,
                     // e.g. what the index and associated primary keys are
-                    return Err(StdError::generic_err("Violates unique constraint on index"));
+                    return Err(StdError::msg("Violates unique constraint on index"));
                 }
                 Ok(UniqueRef {
                     pk: pk.into(),
